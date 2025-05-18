@@ -1,0 +1,79 @@
+# Docker ignore file for Aura AI
+
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+db/
+memory.json
+memory/
+ollama/
+open-webui-data/
+qdrant_data/
+
+# Backup files
+backup*/
+deleted/
+
+# Docker specific
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Scripts (not needed in container)
+*.bat
+*.sh
+
+# Documentation build
+docs/_build/
+
+# Large files that shouldn't be in Docker image
+*.mp4
+*.avi
+*.mov
+*.zip
+*.tar.gz
+
+# Personal information
+*_profile.md
+self_introduction.txt
+
+# Environment files (will be mounted)
+.env.example
