@@ -1,0 +1,58 @@
+# Docker Network Bridge Configuration for Aura and OpenWebUI
+# Created by Claude on 2025-05-13
+
+version: '3'
+
+networks:
+  aura_network:
+    driver: bridge
+
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: aura_new
+    ports:
+      - "11435:11434"
+    volumes:
+      - ./ollama:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - aura_network
+
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:0.6.9
+    container_name: open-webui
+    ports:
+      - "3000:8080"
+    volumes:
+      - ./open-webui-data:/app/backend/data
+    environment:
+      - OLLAMA_BASE_URL=http://aura_new:11434
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    networks:
+      - aura_network
+
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng_aura
+    ports:
+      - "8088:8080"
+    volumes:
+      - ./docker/searxng/settings:/etc/searxng
+    restart: unless-stopped
+    networks:
+      - aura_network
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./qdrant_data:/qdrant/storage
+    restart: unless-stopped
+    networks:
+      - aura_network

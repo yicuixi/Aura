@@ -1,0 +1,41 @@
+use_default_settings: true
+general:
+  instance_name: "Aura Search"
+  debug: false
+server:
+  port: 8080
+  bind_address: "0.0.0.0:8080"
+  secret_key: "88a487ecd964526fe01a02bc4827173c619cd1633de49e4bce1586680018b9de"  # 建议部署前修改
+  # 增加跨域设置，允许所有来源
+  cors_allowall: true
+  # 关闭请求限制器，解决403问题
+  limiter: false
+  http_protocol_version: "1.0"
+ui:
+  default_theme: simple
+  theme_args:
+    simple_style: auto
+search:
+  safe_search: 0
+  autocomplete: ""
+  formats:
+    - html
+    - json
+  default_lang: "zh"
+engines:
+  - name: google
+    engine: google
+    shortcut: g
+    disabled: false  # 启用Google搜索引擎
+  - name: bing
+    engine: bing
+    shortcut: b
+    disabled: false  # 启用Bing搜索引擎
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: d
+    disabled: false  # 启用DuckDuckGo搜索引擎
+  - name: wikipedia
+    engine: wikipedia
+    shortcut: w
+    disabled: false  # 启用维基百科
