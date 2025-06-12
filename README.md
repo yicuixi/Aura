@@ -2,6 +2,41 @@
 
 Aura是一个基于Ollama和LangChain构建的本地AI助手，具备ReAct推理、RAG知识检索和长期记忆功能。
 
+## 🐳 Docker 快速部署
+
+**一键启动脚本：**
+```bash
+# Windows用户
+start_aura.bat
+
+# Linux/Mac用户
+chmod +x start_aura.sh
+./start_aura.sh
+```
+
+**手动部署：**
+```bash
+# 1. 启动Ollama（在宿主机）
+ollama serve
+ollama pull qwen2.5:7b
+
+# 2. 选择部署模式
+# 命令行模式
+docker-compose up -d
+docker exec -it aura_ai python aura.py
+
+# Web API模式  
+docker-compose -f docker-compose-api.yml up -d
+curl http://localhost:5000/health
+```
+
+**服务地址：**
+- Aura API: http://localhost:5000 (仅Web模式)
+- SearxNG: http://localhost:8088
+- Ollama: http://localhost:11435
+
+详细配置请参考下方 **Docker部署** 部分。
+
 ## ✨ 核心特性
 
 - **🧠 ReAct推理框架**: Think-Action-Observation模式的复杂问题解决
@@ -17,7 +52,7 @@ Aura是一个基于Ollama和LangChain构建的本地AI助手，具备ReAct推理
 
 - Python 3.11
 - [Ollama](https://ollama.ai/) 已安装并运行 (http://localhost:11435)
-- Qwen3:4b模型已下载
+- Qwen2.5模型已下载
 
 ### 安装步骤
 
@@ -39,7 +74,7 @@ Aura是一个基于Ollama和LangChain构建的本地AI助手，具备ReAct推理
 
 4. **下载模型** (如果未下载):
    ```bash
-   ollama pull qwen3:4b
+   ollama pull qwen2.5:7b
    ```
 
 5. **运行Aura**:
@@ -73,19 +108,58 @@ python aura.py
 
 ### Docker部署
 
+Docker部署提供两种模式：
+
+#### 模式1：命令行交互模式
+适合本地开发、学习、个人使用
 ```bash
-# 启动所有服务 (Ollama + SearxNG + WebUI)
+# 1. 确保Ollama在宿主机运行
+ollama serve
+ollama pull qwen2.5:7b
+
+# 2. 启动所有服务
 docker-compose up -d
 
-# 检查服务状态
-docker ps
+# 3. 进入交互式会话
+docker exec -it aura_ai python aura.py
+
+# 4. 查看服务状态
+docker-compose ps
 ```
+
+#### 模式2：Web API模式
+适合集成到其他应用、远程访问、多用户
+```bash
+# 1. 启动API服务
+docker-compose -f docker-compose-api.yml up -d
+
+# 2. 测试API
+curl -X POST http://localhost:5000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "messages": [{"role": "user", "content": "你好"}]
+  }'
+
+# 3. 健康检查
+curl http://localhost:5000/health
+```
+
+**服务端口说明：**
+- Aura API：`http://localhost:5000` (仅Web模式)
+- SearxNG搜索：`http://localhost:8088`
+- Ollama API：`http://localhost:11435`（宿主机）
+
+**注意事项：**
+- Ollama必须在宿主机运行，容器通过`host.docker.internal`访问
+- 数据目录会挂载到容器，确保数据持久化
+- 首次启动可能需要几分钟来下载依赖
 
 ## 📁 项目结构
 
 ```
 Aura/
 ├── aura.py              # 🎯 主程序入口
+├── aura_api.py          # 🌐 Web API服务
 ├── memory.py            # 💾 长期记忆管理
 ├── rag.py              # 📚 RAG知识检索系统
 ├── tools.py            # 🔧 工具集实现
@@ -95,6 +169,12 @@ Aura/
 ├── data/               # 📄 知识库文档
 │   └── example_profile.md  # 用户档案模板
 ├── docker/             # 🐳 Docker配置
+│   ├── docker-compose.yml      # 命令行模式
+│   ├── docker-compose-api.yml  # Web API模式
+│   ├── Dockerfile              # 基础镜像
+│   ├── Dockerfile.api          # API镜像
+│   ├── start_aura.bat          # Windows启动脚本
+│   └── start_aura.sh           # Linux/Mac启动脚本
 ├── db/                 # 🗃️ 向量数据库 (运行时生成)
 └── personal_backup/    # 📋 个人信息备份
 ```
@@ -107,13 +187,31 @@ Aura/
 
 ```ini
 [model]
-name = qwen3:4b
+name = qwen2.5:7b
 base_url = http://localhost:11435
 temperature = 0.7
 
 [search]
 searxng_url = http://localhost:8088
 timeout = 15
+```
+
+### 环境变量配置
+
+复制 `.env.example` 为 `.env` 并修改：
+
+```bash
+# Ollama 配置
+OLLAMA_BASE_URL=http://host.docker.internal:11435
+OLLAMA_MODEL=qwen2.5:7b
+
+# SearxNG 配置  
+SEARXNG_SECRET=your_random_secret_key_here
+SEARXNG_URL=http://searxng:8080
+
+# API 配置 (仅Web模式)
+FLASK_HOST=0.0.0.0
+FLASK_PORT=5000
 ```
 
 ### 个性化设置
@@ -159,7 +257,36 @@ cp your_documents.md data/
 
 ### 3. 扩展工具功能
 
-在 `tools.py` 中添加新的工具函数，然后在 `aura_fixed.py` 中注册。
+在 `tools.py` 中添加新的工具函数，然后在 `aura.py` 中注册。
+
+## 🌐 Web API 使用
+
+### OpenAI兼容API
+
+```python
+import requests
+
+def chat_with_aura(message):
+    response = requests.post(
+        "http://localhost:5000/v1/chat/completions",
+        json={
+            "messages": [{"role": "user", "content": message}]
+        }
+    )
+    return response.json()["choices"][0]["message"]["content"]
+
+# 使用示例
+answer = chat_with_aura("帮我解释一下什么是RAG？")
+print(answer)
+```
+
+### 扩展API端点
+
+- `GET /health` - 健康检查
+- `POST /v1/chat/completions` - OpenAI兼容聊天API
+- `POST /api/knowledge/load` - 加载知识库
+- `POST /api/memory/add` - 添加记忆
+- `GET /api/memory/get` - 获取记忆
 
 ## 🐛 故障排除
 
@@ -177,7 +304,7 @@ cp your_documents.md data/
 2. **模型未找到**:
    ```bash
    # 下载模型
-   ollama pull qwen3:4b
+   ollama pull qwen2.5:7b
    
    # 查看已安装模型
    ollama list
@@ -186,10 +313,10 @@ cp your_documents.md data/
 3. **搜索功能异常**:
    ```bash
    # 检查SearxNG服务
-   curl http://localhost:8088/search?q=test&format=json
+   curl "http://localhost:8088/search?q=test&format=json"
    
-   # 或设置API密钥使用其他搜索
-   export SERPER_API_KEY=your_key
+   # 重启SearxNG服务
+   docker-compose restart searxng
    ```
 
 4. **知识库为空**:
@@ -198,9 +325,49 @@ cp your_documents.md data/
    ls data/
    
    # 运行加载知识命令
-   python aura_fixed.py
+   python aura.py
    👤 输入: 加载知识
    ```
+
+5. **Docker服务异常**:
+   ```bash
+   # 检查容器状态
+   docker-compose ps
+   
+   # 查看容器日志
+   docker-compose logs aura
+   
+   # 重启服务
+   docker-compose restart aura
+   
+   # 重新构建并启动
+   docker-compose up --build -d
+   
+   # 检查宿主机Ollama连接
+   docker exec -it aura_ai curl http://host.docker.internal:11435/api/tags
+   ```
+
+### 🔧 调试命令
+
+```bash
+# 查看所有容器状态
+docker-compose ps
+
+# 查看容器日志
+docker-compose logs -f aura
+docker-compose logs -f searxng
+
+# 进入容器调试
+docker exec -it aura_ai bash
+
+# 重新构建并启动
+docker-compose down
+docker-compose up --build -d
+
+# 清理所有容器和数据（谨慎使用）
+docker-compose down -v
+docker system prune -a
+```
 
 ## 🔒 隐私和安全
 
@@ -231,7 +398,14 @@ cp your_documents.md data/
 
 ## 📈 更新日志
 
-### v1.1 (Latest) - 清理版本
+### v1.2 (Latest) - Docker完整版
+- 🐳 完整Docker化部署，支持命令行和Web API两种模式
+- 🚀 一键启动脚本，Windows和Linux双平台支持
+- 🌐 OpenAI兼容的Web API接口
+- 🔧 健康检查和故障排除指南
+- 📝 完整的Docker部署文档
+
+### v1.1 - 清理版本
 - 🧹 移除所有个人信息和敏感数据
 - 🔧 修复LLM输出解析问题
 - 📝 创建通用模板和配置

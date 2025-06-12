@@ -34,9 +34,11 @@ pandas>=2.1.0
 # 如果需要Markdown支持，取消注释：
 # python-markdown
 
+# === Web界面（Web API模式必需） ===
+flask>=3.0.0
+
 # === Web界面（可选） ===
-# 如果需要Web界面，取消注释：
-# flask>=3.0.0
+# 如果需要WebSocket支持，取消注释：
 # flask-socketio>=5.3.0
 
 # === 性能监控（可选） ===

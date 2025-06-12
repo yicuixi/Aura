@@ -1,12 +1,13 @@
-# Docker Compose for Aura AI
+# Docker Compose for Aura AI - Command Line Mode
 version: '3.8'
 
 services:
   aura:
     build: .
     container_name: aura_ai
-    ports:
-      - "5000:5000"
+    # 命令行模式不需要端口映射
+    tty: true
+    stdin_open: true
     volumes:
       - ./data:/app/data
       - ./db:/app/db
