@@ -1,16 +1,55 @@
-langchain==0.1.5
-langchain-community==0.0.19
-langchain-core==0.1.16
-chromadb==0.4.22
-sentence-transformers==2.3.1
-transformers==4.36.2
-torch==2.1.2
-requests==2.31.0
-unstructured==0.11.2
-python-dotenv==1.0.0
-pdf2image==1.16.3
-pytesseract==0.3.10
-pandas==2.1.4
-matplotlib==3.8.2
-unstructured-markdown==0.1.1
-pypdf==3.17.2
+# Aura AI Assistant - 核心依赖
+# 更新时间: 2025-06-12
+
+# === 核心框架 ===
+langchain>=0.3.0
+langchain-community>=0.3.0
+langchain-core>=0.3.0
+
+# === LLM支持 ===
+# Ollama通过HTTP API调用，无需额外包
+
+# === 向量数据库 ===
+chromadb>=0.5.0
+
+# === 文本处理和嵌入 ===
+sentence-transformers>=2.7.0
+
+# === 网络请求 ===
+requests>=2.31.0
+
+# === 环境配置 ===
+python-dotenv>=1.0.0
+
+# === 数据处理 ===
+pandas>=2.1.0
+
+# === 文档加载器（按需安装） ===
+# 如果需要PDF支持，取消注释：
+# pypdf>=4.0.0
+
+# 如果需要CSV支持，取消注释：
+# python-csv
+
+# 如果需要Markdown支持，取消注释：
+# python-markdown
+
+# === Web界面（可选） ===
+# 如果需要Web界面，取消注释：
+# flask>=3.0.0
+# flask-socketio>=5.3.0
+
+# === 性能监控（可选） ===
+# 如果需要性能监控，取消注释：
+# psutil>=5.9.0
+
+# === 开发工具（可选） ===
+# 如果需要测试，取消注释：
+# pytest>=7.0.0
+# pytest-cov>=4.0.0
+
+# === 注意事项 ===
+# 1. 某些包（如torch）很大，仅在需要时安装
+# 2. 使用 >= 而不是 == 以避免版本冲突
+# 3. 核心功能只需要上面的基础包
+# 4. 可选功能的包已注释，按需启用

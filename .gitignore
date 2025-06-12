@@ -127,6 +127,7 @@ env_path.txt
 backup*/
 deleted/
 *_backup_*/
+personal_backup/
 
 # 个人信息文件
 *_profile.md

@@ -44,7 +44,7 @@ Aura是一个基于Ollama和LangChain构建的本地AI助手，具备ReAct推理
 
 5. **运行Aura**:
    ```bash
-   python aura_fixed.py
+   python aura.py
    ```
 
 ## 🎯 使用方法
@@ -52,7 +52,7 @@ Aura是一个基于Ollama和LangChain构建的本地AI助手，具备ReAct推理
 ### 命令行界面
 
 ```bash
-python aura_fixed.py
+python aura.py
 ```
 
 **基本对话**:
@@ -85,7 +85,7 @@ docker ps
 
 ```
 Aura/
-├── aura_fixed.py        # 🎯 主程序入口
+├── aura.py              # 🎯 主程序入口
 ├── memory.py            # 💾 长期记忆管理
 ├── rag.py              # 📚 RAG知识检索系统
 ├── tools.py            # 🔧 工具集实现
