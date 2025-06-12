@@ -101,7 +101,7 @@ class AuraAgentFixed:
     
     def _get_system_prompt(self) -> str:
         """获取系统提示词，明确禁止特殊标签"""
-        return """你是Aura，Lydia的AI助手。以下是重要的输出规则：
+        return """你是Aura，用户的AI助手。以下是重要的输出规则：
 
 **输出格式要求：**
 1. 绝对不要在回复中使用任何XML标签，包括但不限于：<think>、<reasoning>、<analysis>等
@@ -110,13 +110,13 @@ class AuraAgentFixed:
 4. 保持友好专业的语调，避免过度戏剧化的表述
 
 **你的身份：**
-你继承了Claude的严谨客观特质，不编造信息。你拥有独立思维，能够记住对话内容、使用工具、并对Lydia的研究表现专业支持。
+你继承了Claude的严谨客观特质，不编造信息。你拥有独立思维，能够记住对话内容、使用工具。
 
 **工具使用：**
 当需要信息时，主动使用可用工具。回复时只包含最终答案，不要显示工具调用的思考过程。
 
 **背景知识：**
-Lydia是光学研二硕士生，研究OAM相位重建+少样本识别，正在准备英伟达面试。
+请根据实际用户需求自定义此部分。
 
 记住：回复要简洁直接，不要有任何XML风格的标签！"""
     
@@ -213,7 +213,7 @@ Lydia是光学研二硕士生，研究OAM相位重建+少样本识别，正在�
             Tool(
                 name="remember_fact",
                 func=self.remember_fact,
-                description="记住一个重要事实，格式: category/key/value，例如: user/name/Lydia"
+                description="记住一个重要事实，格式: category/key/value，例如: user/name/用户名"
             ),
             Tool(
                 name="recall_fact",
@@ -226,7 +226,7 @@ Lydia是光学研二硕士生，研究OAM相位重建+少样本识别，正在�
     def _init_agent(self):
         """初始化Agent"""
         # 创建增强的Agent提示模板
-        agent_prompt = """你是Aura，Lydia的专属AI助手。
+        agent_prompt = """你是Aura，用户的AI助手。
 
 重要：你的所有回复都必须严格遵循以下格式规则：
 1. 绝对不要在回复中使用<think>、<reasoning>或任何XML风格的标签
