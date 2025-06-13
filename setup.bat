@@ -1,148 +1,148 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM Aura AI 项目设置脚本 - Windows版本
-REM 自动检查环境、安装依赖、配置服务
+REM Aura AI Project Setup Script - Windows Version
+REM Auto check environment, install dependencies, configure services
 
 echo ========================================
-echo 🚀 Aura AI 项目设置助手
+echo Aura AI Project Setup Assistant
 echo ========================================
 
-REM 检查Python
-echo 🐍 检查Python环境...
+REM Check Python
+echo Checking Python environment...
 python --version >nul 2>&1
 if errorlevel 1 (
-    echo ❌ Python未安装，请先安装Python 3.11+
-    echo 下载地址: https://www.python.org/downloads/
+    echo ERROR: Python not installed, please install Python 3.11+
+    echo Download: https://www.python.org/downloads/
     pause
     exit /b 1
 ) else (
     for /f "tokens=2" %%i in ('python --version') do set PYTHON_VERSION=%%i
-    echo ✅ Python版本: !PYTHON_VERSION!
+    echo OK: Python version: !PYTHON_VERSION!
 )
 
-REM 检查pip
+REM Check pip
 pip --version >nul 2>&1
 if errorlevel 1 (
-    echo ❌ pip未安装，请先安装pip
+    echo ERROR: pip not installed, please install pip first
     pause
     exit /b 1
 )
 
-REM 创建虚拟环境选项
+REM Create virtual environment option
 echo.
-set /p create_venv="是否创建Python虚拟环境？(推荐) (y/N): "
+set /p create_venv="Create Python virtual environment? (recommended) (y/N): "
 if /i "!create_venv!"=="y" (
-    echo 📦 创建虚拟环境...
+    echo Creating virtual environment...
     python -m venv aura_env
     
-    REM 激活虚拟环境
+    REM Activate virtual environment
     call aura_env\Scripts\activate.bat
-    echo ✅ 虚拟环境已创建并激活
-    echo 💡 下次使用前请运行: aura_env\Scripts\activate.bat
+    echo OK: Virtual environment created and activated
+    echo TIP: Next time run: aura_env\Scripts\activate.bat
 )
 
-REM 安装Python依赖
+REM Install Python dependencies
 echo.
-echo 📦 安装Python依赖...
+echo Installing Python dependencies...
 pip install -r requirements.txt
 
 if errorlevel 1 (
-    echo ❌ 依赖安装失败，请检查网络连接
+    echo ERROR: Dependency installation failed, check network connection
     pause
     exit /b 1
 ) else (
-    echo ✅ Python依赖安装完成
+    echo OK: Python dependencies installed
 )
 
-REM 检查Ollama
+REM Check Ollama
 echo.
-echo 🔍 检查Ollama服务...
+echo Checking Ollama service...
 curl -s http://localhost:11435/api/tags >nul 2>&1
 if errorlevel 1 (
-    echo ❌ Ollama服务未运行
-    echo 请先安装并启动Ollama:
-    echo    1. 访问 https://ollama.ai/ 下载安装
-    echo    2. 运行: ollama serve
-    echo    3. 下载模型: ollama pull qwen2.5:7b
+    echo ERROR: Ollama service not running
+    echo Please install and start Ollama first:
+    echo    1. Visit https://ollama.ai/ to download
+    echo    2. Run: ollama serve
+    echo    3. Download model: ollama pull qwen3:4b
     
-    set /p install_ollama="是否现在打开Ollama下载页面？ (y/N): "
+    set /p install_ollama="Open Ollama download page now? (y/N): "
     if /i "!install_ollama!"=="y" (
         start https://ollama.ai/
     )
 ) else (
-    echo ✅ Ollama服务运行正常
+    echo OK: Ollama service is running
     
-    REM 检查模型
-    ollama list | findstr "qwen2.5" >nul 2>&1
+    REM Check model
+    ollama list | findstr "qwen3" >nul 2>&1
     if errorlevel 1 (
-        echo 📥 正在下载Qwen2.5模型...
-        ollama pull qwen2.5:7b
-        echo ✅ 模型下载完成
+        echo Downloading qwen3:4b model...
+        ollama pull qwen3:4b
+        echo OK: Model download completed
     ) else (
-        echo ✅ Qwen2.5模型已安装
+        echo OK: qwen3:4b model installed
     )
 )
 
-REM 配置环境文件
+REM Configure environment file
 echo.
-echo ⚙️ 配置环境文件...
+echo Configuring environment file...
 if not exist .env (
     copy .env.example .env >nul
-    echo ✅ 已创建.env配置文件
+    echo OK: Created .env configuration file
 ) else (
-    echo 💡 .env文件已存在
+    echo INFO: .env file already exists
 )
 
-REM 创建必要目录
+REM Create necessary directories
 echo.
-echo 📁 创建必要目录...
+echo Creating necessary directories...
 if not exist data mkdir data
 if not exist db mkdir db
 if not exist logs mkdir logs
 if not exist memory mkdir memory
-echo ✅ 目录创建完成
+echo OK: Directories created
 
-REM Docker环境检查
+REM Docker environment check
 echo.
-echo 🐳 检查Docker环境...
+echo Checking Docker environment...
 docker --version >nul 2>&1
 if errorlevel 1 (
-    echo ⚠️ Docker未安装，将使用本地Python环境
-    echo 如需Docker支持，请安装Docker Desktop
+    echo WARNING: Docker not installed, will use local Python environment
+    echo For Docker support, please install Docker Desktop
 ) else (
-    echo ✅ Docker已安装
+    echo OK: Docker installed
     
     docker-compose --version >nul 2>&1
     if errorlevel 1 (
-        echo ⚠️ Docker Compose未安装
+        echo WARNING: Docker Compose not installed
     ) else (
-        echo ✅ Docker Compose已安装
-        echo 💡 可以使用Docker部署: start_aura.bat
+        echo OK: Docker Compose installed
+        echo TIP: Can use Docker deployment: start_aura.bat
     )
 )
 
-REM 完成设置
+REM Setup complete
 echo.
-echo 🎉 Aura AI 设置完成！
+echo Aura AI Setup Complete!
 echo.
-echo 🚀 启动方式：
-echo 1. 本地Python环境:
+echo Startup Options:
+echo 1. Local Python environment:
 echo    python aura.py
 echo.
-echo 2. Web API模式:
+echo 2. Web API mode:
 echo    python aura_api.py
 echo.
-echo 3. Docker模式:
+echo 3. Docker mode:
 echo    start_aura.bat
 echo.
-echo 📖 更多信息请查看 README.md
+echo For more information, see README.md
 
-REM 询问是否立即启动
+REM Ask if start now
 echo.
-set /p start_now="是否现在启动Aura？ (y/N): "
+set /p start_now="Start Aura now? (y/N): "
 if /i "!start_now!"=="y" (
-    echo 🚀 启动Aura AI...
+    echo Starting Aura AI...
     python aura.py
 )
 
