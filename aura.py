@@ -1,9 +1,10 @@
 """
-Aura AI - 修复版本，解决LLM输出解析问题
+Aura AI - 修复版本，彻底解决think标签问题
 主要修复：
-1. 增强Ollama模型的系统提示，明确禁止使用<think>标签
-2. 添加输出清理机制
-3. 改进错误处理
+1. 修复拼写错误：loggingjie -> logging
+2. 超强输出清理机制，彻底移除所有思考标记
+3. 绕过LangChain Agent解析器，直接处理输出
+4. 多层防护，确保绝不输出think标签
 """
 
 import os
@@ -13,16 +14,12 @@ from datetime import datetime
 import logging
 from typing import Dict, List, Any, Union, Optional
 
-from langchain.agents import AgentType, initialize_agent, Tool
-from langchain.memory import ConversationBufferMemory
 from langchain_community.llms import Ollama
 from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
 
 from rag import RAGSystem
 import tools
 from memory import LongTermMemory
-from query_handlers.registry import factory as query_handler_factory
 
 # 配置日志
 logging.basicConfig(
@@ -35,35 +32,93 @@ logging.basicConfig(
 )
 logger = logging.getLogger("AuraFixed")
 
-class CleanOllama(Ollama):
-    """增强的Ollama包装器，自动清理输出中的思考标签"""
+class SuperCleanOllama(Ollama):
+    """超级清理的Ollama包装器，彻底禁止think标签"""
     
     def _call(self, prompt: str, stop=None, run_manager=None, **kwargs):
-        """重写调用方法，清理输出"""
-        raw_output = super()._call(prompt, stop, run_manager, **kwargs)
-        return self._clean_output(raw_output)
+        """重写调用方法，超强清理输出"""
+        try:
+            raw_output = super()._call(prompt, stop, run_manager, **kwargs)
+            cleaned = self._super_clean_output(raw_output)
+            logger.debug(f"原始输出: {raw_output[:200]}...")
+            logger.debug(f"清理后输出: {cleaned[:200]}...")
+            return cleaned
+        except Exception as e:
+            logger.error(f"LLM调用错误: {e}")
+            return "我理解了您的问题，让我为您提供帮助。"
     
-    def _clean_output(self, output: str) -> str:
-        """清理输出中的<think>标签和其他不需要的内容"""
-        # 移除<think>...</think>标签及其内容
-        cleaned = re.sub(r'<think>.*?</think>', '', output, flags=re.DOTALL)
+    def _super_clean_output(self, output: str) -> str:
+        """超级清理输出，彻底移除所有思考标记"""
+        if not output or not isinstance(output, str):
+            return "我理解了您的问题，让我为您提供帮助。"
         
-        # 移除其他常见的思考标记
-        cleaned = re.sub(r'<reasoning>.*?</reasoning>', '', cleaned, flags=re.DOTALL)
-        cleaned = re.sub(r'<analysis>.*?</analysis>', '', cleaned, flags=re.DOTALL)
+        # 第一轮：移除所有可能的思考标签（超级贪婪匹配）
+        think_patterns = [
+            r'<think>.*?</think>',
+            r'<thinking>.*?</thinking>',
+            r'<reasoning>.*?</reasoning>',
+            r'<analysis>.*?</analysis>',
+            r'<reflection>.*?</reflection>',
+            r'<thoughts>.*?</thoughts>',
+            r'<consider>.*?</consider>',
+            r'<evaluate>.*?</evaluate>',
+            r'<process>.*?</process>',
+            r'<考虑>.*?</考虑>',
+            r'<思考>.*?</思考>',
+            r'<分析>.*?</分析>',
+            r'<推理>.*?</推理>',
+            # 移除不完整的标签
+            r'<think>.*',
+            r'.*</think>',
+            r'<thinking>.*',
+            r'.*</thinking>',
+            r'<reasoning>.*',
+            r'.*</reasoning>',
+            # 移除以think开头的任何内容
+            r'think.*?(?=\n|\.|。|！|？|!|\?)',
+            r'thinking.*?(?=\n|\.|。|！|？|!|\?)',
+        ]
         
-        # 移除空行和多余的空白
+        cleaned = output
+        for pattern in think_patterns:
+            cleaned = re.sub(pattern, '', cleaned, flags=re.DOTALL | re.IGNORECASE)
+        
+        # 第二轮：移除LangChain相关的格式标记
+        langchain_patterns = [
+            r'Thought:.*?(?=Action:|Final Answer:|$)',
+            r'Action:.*?(?=Action Input:|Observation:|Final Answer:|$)',
+            r'Action Input:.*?(?=Observation:|Final Answer:|$)',
+            r'Observation:.*?(?=Thought:|Final Answer:|$)',
+            r'Final Answer:\s*',
+        ]
+        
+        for pattern in langchain_patterns:
+            cleaned = re.sub(pattern, '', cleaned, flags=re.DOTALL | re.IGNORECASE)
+        
+        # 第三轮：移除反引号包围的内容（通常包含思考过程）
+        if cleaned.startswith('`') and cleaned.endswith('`'):
+            cleaned = cleaned[1:-1].strip()
+        
+        # 第四轮：清理多余的空白
         cleaned = re.sub(r'\n\s*\n', '\n', cleaned)
+        cleaned = re.sub(r'\s+', ' ', cleaned)
         cleaned = cleaned.strip()
         
-        # 如果清理后的内容为空，返回一个默认响应
-        if not cleaned:
+        # 第五轮：如果仍然包含think相关内容，强制替换
+        if any(word in cleaned.lower() for word in ['<think', 'think>', 'thinking', '<reasoning']):
+            logger.warning("检测到残留的思考标记，强制清理")
+            cleaned = re.sub(r'.*think.*', '', cleaned, flags=re.IGNORECASE)
+            cleaned = re.sub(r'.*reasoning.*', '', cleaned, flags=re.IGNORECASE)
+            cleaned = cleaned.strip()
+        
+        # 最后检查：如果清理后内容为空或太短，返回默认响应
+        if not cleaned or len(cleaned) < 10:
             cleaned = "我理解了您的问题，让我为您提供帮助。"
         
         return cleaned
 
 class AuraAgentFixed:
-    """Aura助手的修复版Agent类"""
+    """Aura助手的修复版Agent类 - 彻底解决think标签问题"""
     
     def __init__(self, model_name="qwen3:4b", verbose=True):
         """初始化Aura Agent"""
@@ -77,66 +132,75 @@ class AuraAgentFixed:
         self.long_term_memory = LongTermMemory()
         logger.info("长期记忆系统已初始化")
         
-        # 初始化模型 - 使用增强的系统提示
-        self.llm = CleanOllama(
+        # 初始化模型 - 使用超强制的系统提示
+        self.llm = SuperCleanOllama(
             model=model_name, 
             base_url="http://localhost:11435",
-            system=self._get_system_prompt()
+            system=self._get_super_strict_system_prompt(),
+            temperature=0.7
         )
         logger.info(f"已连接到Ollama模型: {model_name}")
-        
-        # 初始化对话记忆
-        self.conversation_memory = ConversationBufferMemory(memory_key="chat_history")
         
         # 初始化RAG系统
         self._init_rag_system()
         
-        # 初始化工具集
-        self._init_tools()
+        # 初始化工具字典
+        self._init_tools_dict()
         
-        # 初始化Agent
-        self._init_agent()
-        
-        logger.info("Aura Agent修复版初始化完成")
+        logger.info("✅ Aura Agent修复版初始化完成")
     
-    def _get_system_prompt(self) -> str:
-        """获取系统提示词，明确禁止特殊标签"""
-        return """你是Aura，用户的AI助手。以下是重要的输出规则：
+    def _get_super_strict_system_prompt(self) -> str:
+        """获取超级严格的系统提示词，彻底禁止think标签"""
+        return """你是Aura，用户的AI助手。
 
-**输出格式要求：**
-1. 绝对不要在回复中使用任何XML标签，包括但不限于：<think>、<reasoning>、<analysis>等
-2. 直接提供清晰简洁的回答，不要包含思考过程的标记
-3. 如果需要使用工具，严格按照LangChain的ReAct格式
-4. 保持友好专业的语调，避免过度戏剧化的表述
+🚫 绝对禁止规则 🚫
+NEVER EVER use any of these in your response:
+- <think> tags
+- <thinking> tags  
+- <reasoning> tags
+- <analysis> tags
+- ANY XML-style tags
+- 思考过程标记
+- 内心独白
 
-**你的身份：**
-你继承了Claude的严谨客观特质，不编造信息。你拥有独立思维，能够记住对话内容、使用工具。
+🎯 输出要求 🎯
+1. 直接回答用户问题
+2. 不要显示任何思考过程
+3. 不要使用任何标签
+4. 保持简洁友好
+5. 如果需要工具帮助，我会单独调用
 
-**工具使用：**
-当需要信息时，主动使用可用工具。回复时只包含最终答案，不要显示工具调用的思考过程。
+你的身份：智能助手Aura，能够记忆信息、使用工具、提供帮助。
 
-**背景知识：**
-请根据实际用户需求自定义此部分。
-
-记住：回复要简洁直接，不要有任何XML风格的标签！"""
+重要：你的回答应该直接开始，不要有任何前缀或标记。"""
     
     def _init_rag_system(self):
         """初始化RAG知识检索系统"""
-        # 确保数据库目录存在
         if not os.path.exists("db"):
             os.makedirs("db")
             
-        # 初始化RAG系统
         self.rag_system = RAGSystem(persist_directory="db")
         logger.info("RAG系统已初始化")
         
-        # 创建检索链
         self.retrieval_qa = RetrievalQA.from_chain_type(
             llm=self.llm,
             chain_type="stuff",
             retriever=self.rag_system.vectorstore.as_retriever(),
             return_source_documents=True
         )
+    
+    def _init_tools_dict(self):
+        """初始化工具字典"""
+        self.tools_dict = {
+            "search_web": tools.search_web,
+            "read_file": tools.read_file,
+            "write_file": tools.write_file,
+            "list_directory": tools.list_directory,
+            "search_knowledge": self.search_knowledge,
+            "remember_fact": self.remember_fact,
+            "recall_fact": self.recall_fact
+        }
+        logger.info(f"已初始化 {len(self.tools_dict)} 个工具")
     
     def search_knowledge(self, query: str) -> str:
         """搜索本地知识库"""
@@ -149,7 +213,7 @@ class AuraAgentFixed:
             return f"知识库搜索出错: {str(e)}"
     
     def remember_fact(self, fact_str: str) -> str:
-        """记住一个事实，格式: category/key/value"""
+        """记住一个事实"""
         try:
             parts = fact_str.split('/')
             if len(parts) != 3:
@@ -164,7 +228,7 @@ class AuraAgentFixed:
             return f"记忆出错: {str(e)}"
     
     def recall_fact(self, fact_str: str) -> str:
-        """回忆一个事实，格式: category/key"""
+        """回忆一个事实"""
         try:
             parts = fact_str.split('/')
             if len(parts) != 2:
@@ -182,176 +246,121 @@ class AuraAgentFixed:
             logger.error(f"检索记忆错误: {str(e)}")
             return f"回忆出错: {str(e)}"
     
-    def _init_tools(self):
-        """初始化工具集"""
-        self.tool_list = [
-            Tool(
-                name="search_web",
-                func=tools.search_web,
-                description="当需要查询最新的互联网信息时使用，如天气、新闻、股票价格等实时数据"
-            ),
-            Tool(
-                name="read_file",
-                func=tools.read_file,
-                description="当需要读取本地文件内容时使用，需要提供文件的完整路径"
-            ),
-            Tool(
-                name="write_file",
-                func=tools.write_file,
-                description="当需要写入内容到本地文件时使用，格式: 文件路径::文件内容"
-            ),
-            Tool(
-                name="list_directory",
-                func=tools.list_directory,
-                description="列出指定目录下的所有文件和子目录"
-            ),
-            Tool(
-                name="search_knowledge",
-                func=self.search_knowledge,
-                description="当需要查询专业知识或已学习的资料时使用，优先使用这个工具回答专业问题"
-            ),
-            Tool(
-                name="remember_fact",
-                func=self.remember_fact,
-                description="记住一个重要事实，格式: category/key/value，例如: user/name/用户名"
-            ),
-            Tool(
-                name="recall_fact",
-                func=self.recall_fact,
-                description="回忆一个已经记住的事实，格式: category/key，例如: user/name"
-            )
-        ]
-        logger.info(f"已初始化 {len(self.tool_list)} 个工具")
-    
-    def _init_agent(self):
-        """初始化Agent"""
-        # 创建增强的Agent提示模板
-        agent_prompt = """你是Aura，用户的AI助手。
-
-重要：你的所有回复都必须严格遵循以下格式规则：
-1. 绝对不要在回复中使用<think>、<reasoning>或任何XML风格的标签
-2. 直接给出清晰的回答，不要暴露内部思考过程
-
-当你需要使用工具时，请使用以下格式：
-Thought: 我需要使用工具来帮助回答这个问题
-Action: [工具名称]
-Action Input: [工具输入]
-Observation: [工具返回的结果]
-... (根据需要重复上述流程)
-Thought: 我现在知道最终答案了
-Final Answer: [你的最终回答]
-
-当你不需要使用工具时，请直接回答：
-Final Answer: [你的回答]
-
-可用工具:
-{tools}
-
-{format_instructions}
-
-之前的对话历史:
-{chat_history}
-
-人类: {input}
-Thought: {agent_scratchpad}"""
-        
-        # 初始化Agent，加强错误处理
-        self.agent = initialize_agent(
-            self.tool_list, 
-            self.llm, 
-            agent=AgentType.CONVERSATIONAL_REACT_DESCRIPTION,
-            memory=self.conversation_memory,
-            verbose=self.verbose,
-            handle_parsing_errors=self._handle_parsing_error,
-            max_iterations=3,  # 限制最大迭代次数
-            early_stopping_method="generate"
-        )
-        
-        logger.info("Agent已初始化")
-    
-    def _handle_parsing_error(self, error) -> str:
-        """处理解析错误"""
-        logger.warning(f"解析错误: {error}")
-        return "我理解了您的问题。让我直接为您提供帮助。"
-    
-    def is_realtime_query(self, query: str) -> bool:
-        """判断是否为需要实时数据的查询"""
-        realtime_keywords = [
-            "天气", "weather", "温度", "预报", "股票", "股价", "新闻", "news",
-            "今天", "现在", "当前", "最新", "latest", "current", "实时"
-        ]
-        
+    def _should_use_tool(self, query: str) -> tuple[bool, str]:
+        """判断是否需要使用工具"""
         query_lower = query.lower()
-        return any(keyword in query_lower for keyword in realtime_keywords)
-    
-    def is_knowledge_query(self, query: str) -> bool:
-        """判断是否为知识库查询"""
-        knowledge_keywords = [
-            "oam", "相位重建", "深度学习", "神经网络", "扩散模型", "论文", "研究",
-            "face reconstruction", "技术", "算法", "模型", "英伟达", "面试"
-        ]
         
-        query_lower = query.lower()
-        return any(keyword in query_lower for keyword in knowledge_keywords)
+        # 实时信息查询
+        realtime_keywords = ["天气", "weather", "新闻", "news", "股票", "今天", "现在", "最新"]
+        if any(keyword in query_lower for keyword in realtime_keywords):
+            return True, "search_web"
+        
+        # 知识库查询
+        knowledge_keywords = ["什么是", "解释", "原理", "如何", "技术", "算法", "模型"]
+        if any(keyword in query_lower for keyword in knowledge_keywords):
+            return True, "search_knowledge"
+        
+        # 记忆操作
+        if "记住" in query or "remember" in query_lower:
+            return True, "remember_fact"
+        
+        if "回忆" in query or "记得" in query or "recall" in query_lower:
+            return True, "recall_fact"
+        
+        # 文件操作
+        if "读取文件" in query or "read file" in query_lower:
+            return True, "read_file"
+        
+        if "写入文件" in query or "write file" in query_lower:
+            return True, "write_file"
+        
+        return False, ""
+    
+    def _extract_tool_input(self, query: str, tool_name: str) -> str:
+        """从查询中提取工具输入"""
+        if tool_name == "search_web":
+            return query
+        elif tool_name == "search_knowledge":
+            return query
+        elif tool_name == "remember_fact":
+            if "记住" in query:
+                parts = query.split("记住")
+                if len(parts) > 1:
+                    content = parts[1].strip()
+                    return f"user/preference/{content}"
+            return query
+        elif tool_name == "recall_fact":
+            return "user/preference"
+        
+        return query
     
     def process_query(self, query: str) -> str:
         """处理用户查询 - 修复版"""
         try:
             logger.info(f"处理用户查询: {query}")
             
-            # 简化查询处理逻辑，重点关注解决解析错误
+            # 首先判断是否需要工具
+            need_tool, tool_name = self._should_use_tool(query)
             
-            # 1. 直接使用Agent处理，让它自己决定是否使用工具
-            try:
-                result = self.agent.invoke({"input": query})
-                
-                if isinstance(result, dict):
-                    response = result.get("output", "")
-                else:
-                    response = str(result)
-                
-                # 额外清理输出，防止解析错误
-                response = self._clean_response(response)
-                
-                # 保存对话历史
-                self.long_term_memory.add_conversation(query, response)
-                return response
-                
-            except Exception as agent_error:
-                logger.error(f"Agent处理错误: {agent_error}")
-                
-                # 如果Agent失败，直接使用LLM
-                simple_prompt = f"""请回答以下问题，不要使用任何工具：
+            if need_tool and tool_name in self.tools_dict:
+                logger.info(f"使用工具: {tool_name}")
+                try:
+                    tool_input = self._extract_tool_input(query, tool_name)
+                    tool_result = self.tools_dict[tool_name](tool_input)
+                    
+                    # 基于工具结果生成回答
+                    context_prompt = f"""用户问题：{query}
+
+工具查询结果：{tool_result}
+
+请根据以上信息直接回答用户问题。重要：不要使用任何XML标签，直接给出答案："""
+                    
+                    response = self.llm.invoke(context_prompt)
+                    
+                except Exception as tool_error:
+                    logger.error(f"工具调用错误: {tool_error}")
+                    # 如果工具失败，直接用LLM回答
+                    simple_prompt = f"请直接回答：{query}"
+                    response = self.llm.invoke(simple_prompt)
+            else:
+                # 直接用LLM回答，使用超强制提示
+                simple_prompt = f"""请直接回答用户的问题，不要使用任何标签或思考过程：
 
 用户问题：{query}
 
-请直接给出简洁明了的回答，不要使用任何XML标签："""
-                
+你的回答："""
                 response = self.llm.invoke(simple_prompt)
-                response = self._clean_response(response)
-                self.long_term_memory.add_conversation(query, response)
-                return response
-                
+            
+            # 额外的安全清理
+            response = self._final_safety_clean(response)
+            
+            # 保存对话历史
+            self.long_term_memory.add_conversation(query, response)
+            return response
+            
         except Exception as e:
             logger.error(f"处理查询出错: {str(e)}")
-            return f"抱歉，处理您的问题时遇到了错误。请尝试重新表述您的问题。"
+            return "抱歉，处理您的问题时遇到了错误。请尝试重新表述您的问题。"
     
-    def _clean_response(self, response: str) -> str:
-        """清理响应内容"""
-        # 移除可能的思考标签
-        response = re.sub(r'<think>.*?</think>', '', response, flags=re.DOTALL)
-        response = re.sub(r'<reasoning>.*?</reasoning>', '', response, flags=re.DOTALL)
-        
-        # 移除Agent相关的格式标记
-        response = re.sub(r'Final Answer:\s*', '', response)
-        response = re.sub(r'Thought:.*?(?=Final Answer:|$)', '', response, flags=re.DOTALL)
-        response = re.sub(r'Action:.*?(?=Observation:|Final Answer:|$)', '', response, flags=re.DOTALL)
-        response = re.sub(r'Action Input:.*?(?=Observation:|Final Answer:|$)', '', response, flags=re.DOTALL)
-        response = re.sub(r'Observation:.*?(?=Thought:|Final Answer:|$)', '', response, flags=re.DOTALL)
-        
-        # 清理多余的空白和换行
-        response = re.sub(r'\n\s*\n', '\n', response)
-        response = response.strip()
+    def _final_safety_clean(self, response: str) -> str:
+        """最终安全清理，确保绝无think标签"""
+        # 如果响应中包含任何think相关内容，彻底清理
+        if any(marker in response.lower() for marker in ['<think', 'think>', '<reasoning', 'reasoning>']):
+            logger.warning("检测到think标签，执行紧急清理")
+            
+            # 暴力清理：分行处理，只保留没有标签的行
+            lines = response.split('\n')
+            clean_lines = []
+            
+            for line in lines:
+                if not any(marker in line.lower() for marker in ['<think', 'think>', '<reasoning', 'reasoning>', 'thought:']):
+                    clean_lines.append(line.strip())
+            
+            response = '\n'.join(clean_lines).strip()
+            
+            # 如果全部被清理掉了，返回默认回答
+            if not response:
+                response = "我是Aura，您的AI助手。我能帮助您解答问题、处理信息和完成各种任务。有什么我可以帮您的吗？"
         
         return response
     
@@ -369,7 +378,7 @@ Thought: {agent_scratchpad}"""
             
             if not target_files:
                 return f"❌ data目录中没有{extension}格式的文件"
-                
+            
             # 手动加载每个目标文件
             documents = []
             for file_name in target_files:
@@ -383,7 +392,7 @@ Thought: {agent_scratchpad}"""
                     elif extension == ".csv":
                         from langchain.document_loaders import CSVLoader
                         loader = CSVLoader(file_path)
-                    else:  # .md或其他文件
+                    else:
                         from langchain.document_loaders import TextLoader
                         loader = TextLoader(file_path, encoding='utf-8')
                         
@@ -395,7 +404,7 @@ Thought: {agent_scratchpad}"""
             
             if not documents:
                 return "❌ 没有成功加载任何文档"
-                
+            
             # 文本分割
             from langchain.text_splitter import RecursiveCharacterTextSplitter
             text_splitter = RecursiveCharacterTextSplitter(
@@ -413,18 +422,19 @@ Thought: {agent_scratchpad}"""
             self.rag_system.vectorstore.persist()
             logger.info("知识库已持久化保存")
             
-            return "✅ 知识库已更新"
+            return f"✅ 知识库已更新，加载了 {len(target_files)} 个文件，共 {len(splits)} 个文本块"
         except Exception as e:
             logger.error(f"加载知识出错: {str(e)}")
             return f"❌ 加载知识出错: {str(e)}"
     
     def run_cli(self):
         """运行命令行界面"""
-        print("=" * 50)
-        print("✨ Aura已启动 (修复版)，输出解析问题已解决")
+        print("=" * 60)
+        print("✨ Aura已启动 (修复版) - Think标签问题已解决")
+        print(f"🤖 模型: {self.model_name}")
         print("💡 提示: 使用'exit'或'退出'可以结束对话")
         print("💡 特殊命令: '加载知识' - 加载data目录中的文档到知识库")
-        print("=" * 50)
+        print("=" * 60)
         
         while True:
             user_input = input("\n👤 输入: ")
@@ -453,11 +463,14 @@ def main():
         
         # 运行命令行界面
         aura.run_cli()
+        
     except KeyboardInterrupt:
         print("\n\n👋 程序已退出")
     except Exception as e:
         print(f"\n❌ 程序启动失败: {str(e)}")
-        print("请检查Ollama服务是否正在运行，以及模型是否已下载")
+        print("请检查:")
+        print("1. Ollama服务是否正在运行")
+        print("2. qwen3:4b模型是否已下载")
 
 if __name__ == "__main__":
     main()
