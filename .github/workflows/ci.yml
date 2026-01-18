@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest flake8
+    
+    - name: Lint with flake8
+      run: |
+        # 检查语法错误和未定义变量
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # 检查代码风格（警告，不阻断）
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+    
+    - name: Check imports
+      run: |
+        # 验证主要模块可以正常导入
+        python -c "import rag; print('rag.py OK')"
+        python -c "import memory; print('memory.py OK')"
+        python -c "import tools; print('tools.py OK')"
+

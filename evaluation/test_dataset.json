@@ -1,0 +1,462 @@
+{
+  "metadata": {
+    "version": "5.0",
+    "description": "基于 CMRC2018 的正确评估数据集",
+    "source": "CMRC2018 (哈工大)",
+    "total_cases": 50,
+    "note": "context 已加载到知识库，用 question 测试检索"
+  },
+  "rag_tests": [
+    {
+      "id": "eval_000",
+      "question": "半线天竺鲷的体长可达多少公分？",
+      "expected_answer": "12公分",
+      "relevant_docs": [
+        "doc_000.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_001",
+      "question": "默哀通常用于哀悼哪些人？",
+      "expected_answer": "重要人物",
+      "relevant_docs": [
+        "doc_001.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_002",
+      "question": "美国社会学家罗伯特·莫顿从哪个角度对失范进行了深入而系统的研究？",
+      "expected_answer": "功能主义角度",
+      "relevant_docs": [
+        "doc_002.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_003",
+      "question": "黑额鸣冠雉的体长是多少？",
+      "expected_answer": "63-74厘米",
+      "relevant_docs": [
+        "doc_003.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_004",
+      "question": "嘉兴南站建筑总面积为多少平方米？",
+      "expected_answer": "近5.6万平方米",
+      "relevant_docs": [
+        "doc_004.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_005",
+      "question": "除了后续的空想科学读本，日本还出了哪些读本？",
+      "expected_answer": "「空想法律读本」、「空想历史读本」等",
+      "relevant_docs": [
+        "doc_005.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_006",
+      "question": "谁被委任为首位华人布政司，成为香港拥有第二高权力的人？",
+      "expected_answer": "陈方安生",
+      "relevant_docs": [
+        "doc_006.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_007",
+      "question": "许申是什么地方的人？",
+      "expected_answer": "广东海阳人",
+      "relevant_docs": [
+        "doc_007.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_008",
+      "question": "鬣齿兽科出现于什么时期？",
+      "expected_answer": "古新世晚期",
+      "relevant_docs": [
+        "doc_008.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_009",
+      "question": "现有的鄂罗克族中有多少人认可自己的母语是鄂罗克语？",
+      "expected_answer": "124人",
+      "relevant_docs": [
+        "doc_009.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_010",
+      "question": "什么是一号风球？",
+      "expected_answer": "是澳门特别行政区的热带气旋警告信号，是热带气旋警告信号之中最低级的信号",
+      "relevant_docs": [
+        "doc_010.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_011",
+      "question": "国际人类基因组单体型图计划的目的是什么？",
+      "expected_answer": "建立一个免费向公众开放关于人类疾病（及疾病对药物反应）相关基因的数据库。",
+      "relevant_docs": [
+        "doc_011.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_012",
+      "question": "工作假期签证有什么作用？",
+      "expected_answer": "它允许旅行者出于弥补其旅行资金的目的而在签证颁发国受雇工作",
+      "relevant_docs": [
+        "doc_012.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_013",
+      "question": "quake lake原本指的是什么？",
+      "expected_answer": "美国蒙大拿州于1959年严重地震所造成的一个湖",
+      "relevant_docs": [
+        "doc_013.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_014",
+      "question": "株洲北站是沟通哪些地方的交通要道？",
+      "expected_answer": "华东、华南、西南和北方",
+      "relevant_docs": [
+        "doc_014.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_015",
+      "question": "谢尔吉·拉多涅什斯基主要宣传什么宗教？",
+      "expected_answer": "俄罗斯东正教",
+      "relevant_docs": [
+        "doc_015.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_016",
+      "question": "Eee的含义是什么？",
+      "expected_answer": "「易于学习、易于上手、易于工作」",
+      "relevant_docs": [
+        "doc_016.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_017",
+      "question": "戴龙·罗伯斯是哪国人？",
+      "expected_answer": "古巴",
+      "relevant_docs": [
+        "doc_017.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_018",
+      "question": "民间信仰中认为善行而枉死会获得什么结果？",
+      "expected_answer": "立刻升天或尸解成仙",
+      "relevant_docs": [
+        "doc_018.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_019",
+      "question": "哪里有非常完整的硕鬣狗化石？",
+      "expected_answer": "周口店",
+      "relevant_docs": [
+        "doc_019.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_020",
+      "question": "开始型雌鱼在外形上有什么特征？",
+      "expected_answer": "体棕红色，各鳞片具淡色缘。身体布有蓝色小斑点，尤其颊部更具有小斑点结合成蓝色短斑纹",
+      "relevant_docs": [
+        "doc_020.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_021",
+      "question": "贴扎的含义是什么？",
+      "expected_answer": "将胶布贴于皮肤以达到增进或保护肌肉骨骼系统的非侵入性治疗。",
+      "relevant_docs": [
+        "doc_021.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_022",
+      "question": "日本绿鹦嘴鱼主要分布在什么地方？",
+      "expected_answer": "太平洋区",
+      "relevant_docs": [
+        "doc_022.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_023",
+      "question": "棕榈蝮喜欢在哪里活动？",
+      "expected_answer": "树木之上",
+      "relevant_docs": [
+        "doc_023.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_024",
+      "question": "日月光名称命名来自于谁？",
+      "expected_answer": "星云法师",
+      "relevant_docs": [
+        "doc_024.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_025",
+      "question": "侯景封了宋子仙什么职位？",
+      "expected_answer": "太保",
+      "relevant_docs": [
+        "doc_025.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_026",
+      "question": "上海轨道交通18号线一期工程的总长是多少？",
+      "expected_answer": "36.8公里",
+      "relevant_docs": [
+        "doc_026.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_027",
+      "question": "维尔纳·法伊曼担任过哪个国家的总理？",
+      "expected_answer": "奥地利",
+      "relevant_docs": [
+        "doc_027.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_028",
+      "question": "1969年杨群凭借哪一部作品获得了第七届台湾金马奖最佳男主角？",
+      "expected_answer": "《扬子江风云》",
+      "relevant_docs": [
+        "doc_028.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_029",
+      "question": "《大神一郎奋斗记》在哪个家用主机上被推出？",
+      "expected_answer": "Dreamcast",
+      "relevant_docs": [
+        "doc_029.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_030",
+      "question": "马来西亚曾经就西巴丹岛和利吉丹岛主权问题和哪国有过争议？",
+      "expected_answer": "印度尼西亚",
+      "relevant_docs": [
+        "doc_030.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_031",
+      "question": "司马伦倒台后，索靖为什么被加授散骑常侍？",
+      "expected_answer": "以讨伐孙秀之功获加授散骑常侍",
+      "relevant_docs": [
+        "doc_031.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_032",
+      "question": "短齿天竺鲷有多少枚臀鳍硬棘？",
+      "expected_answer": "2枚",
+      "relevant_docs": [
+        "doc_032.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_033",
+      "question": "新加坡鹦嘴鱼喜欢居住在什么地方？",
+      "expected_answer": "陡峭的珊瑚礁斜坡水域",
+      "relevant_docs": [
+        "doc_033.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_034",
+      "question": "惜字塔通常建造在哪些地方？",
+      "expected_answer": "场镇街口、书院寺庙之内、道路桥梁旁边",
+      "relevant_docs": [
+        "doc_034.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_035",
+      "question": "异齿前肛鳗的体长是多少？",
+      "expected_answer": "22.4公分",
+      "relevant_docs": [
+        "doc_035.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_036",
+      "question": "鄂罗克人居住在什么地方？",
+      "expected_answer": "库页岛",
+      "relevant_docs": [
+        "doc_036.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_037",
+      "question": "深水埗关帝庙供奉的是谁？",
+      "expected_answer": "关羽",
+      "relevant_docs": [
+        "doc_037.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_038",
+      "question": "鬣齿兽科分布在哪些地区？",
+      "expected_answer": "北美洲至非洲",
+      "relevant_docs": [
+        "doc_038.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_039",
+      "question": "红钻鱼在哪里栖息？",
+      "expected_answer": "深沟、大凹坑或斜坡地",
+      "relevant_docs": [
+        "doc_039.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_040",
+      "question": "海宁西站总建筑面积有多少平方米？",
+      "expected_answer": "1.7万平方米",
+      "relevant_docs": [
+        "doc_040.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_041",
+      "question": "范白虎据守的是哪座城市？",
+      "expected_answer": "藤州（今兴安省金洞县）",
+      "relevant_docs": [
+        "doc_041.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_042",
+      "question": "非洲猬目又名什么？",
+      "expected_answer": "非洲鼩目",
+      "relevant_docs": [
+        "doc_042.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_043",
+      "question": "异齿前肛鳗分布在什么地区？",
+      "expected_answer": "印度西太平洋海域",
+      "relevant_docs": [
+        "doc_043.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_044",
+      "question": "10号线西土城站为什么采用分离式站厅？",
+      "expected_answer": "为了绕开路口南北向地下管线",
+      "relevant_docs": [
+        "doc_044.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_045",
+      "question": "葵扇之乡是指哪里？",
+      "expected_answer": "广东新会",
+      "relevant_docs": [
+        "doc_045.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_046",
+      "question": "周朝贵族女子在什么时候举办笄礼？",
+      "expected_answer": "15岁",
+      "relevant_docs": [
+        "doc_046.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_047",
+      "question": "秋山幸二在哪一年获得了单季的全垒打王？",
+      "expected_answer": "1987年",
+      "relevant_docs": [
+        "doc_047.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_048",
+      "question": "中国空间技术研究院的研究涵盖了哪些领域？",
+      "expected_answer": "通信广播卫星、返回式遥感卫星、地球资源卫星、气象卫星、科学探测与技术试验卫星、导航定位卫星和载人航天器等领域",
+      "relevant_docs": [
+        "doc_048.md"
+      ],
+      "category": "公开数据集"
+    },
+    {
+      "id": "eval_049",
+      "question": "日本是如何避免地震人员伤亡的？",
+      "expected_answer": "全国性地震预警系统（紧急地震速报）发出预警",
+      "relevant_docs": [
+        "doc_049.md"
+      ],
+      "category": "公开数据集"
+    }
+  ],
+  "agent_tests": []
+}

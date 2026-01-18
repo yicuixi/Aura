@@ -1,333 +1,278 @@
-# 🌐 网络搜索API配置指南
+# Aura AI宝宝 🤖✨
 
-Aura支持多种网络搜索方式，从完全免费的本地部署到商业API服务。本指南将详细介绍如何申请和配置各种搜索API。
+> 一个拥有"灵魂"的个人AI助手，基于Ollama、LangChain和Qwen3模型构建的本地化AI Agent系统
 
-## 🚀 推荐配置方案
+![Python](https://img.shields.io/badge/python-v3.8+-blue.svg)
+![LangChain](https://img.shields.io/badge/LangChain-latest-green.svg)
+![Ollama](https://img.shields.io/badge/Ollama-Qwen3-orange.svg)
 
-### 方案一：完全免费 (推荐新手)
-- **SearxNG本地部署** - 完全免费，隐私友好
-- 适合：个人使用，注重隐私，技术学习
+## 🎯 核心特性
 
-### 方案二：免费+付费混合 (推荐)  
-- **SearxNG** + **Google Custom Search** (免费额度)
-- 适合：轻度商业使用，成本控制
+- 🧠 **智能对话**: 基于Qwen3:4b模型的自然语言交互
+- 🔍 **知识检索**: RAG系统，可加载本地文档进行问答
+- 💾 **长期记忆**: 记住用户偏好和对话历史
+- 🛠️ **工具调用**: 支持文件操作、网络搜索等功能
+- 🌐 **多种接口**: CLI命令行 + Web API两种使用方式
+- 🏠 **完全本地**: 基于Ollama部署，保护隐私安全
 
-### 方案三：商业级配置
-- **SearxNG** + **Serper API** + **SerpAPI**
-- 适合：高频使用，商业项目，稳定性要求高
+## 🚀 快速开始
 
-## 📋 搜索服务对比
+### 环境要求
+- **Windows 10/11** (主要支持)
+- **Python 3.8+**
+- **8GB+ 内存** (推荐16GB)
 
-| 服务 | 费用 | 每月免费额度 | 稳定性 | 设置难度 | 隐私保护 |
-|------|------|-------------|--------|----------|----------|
-| SearxNG | 免费 | 无限制 | ⭐⭐⭐ | ⭐⭐ | ⭐⭐⭐⭐⭐ |
-| Google CSE | 免费/付费 | 100次/天 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| Serper API | 付费 | 2500次 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-| SerpAPI | 付费 | 100次 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
-
----
-
-## 🔧 方法一：SearxNG本地部署 (推荐)
-
-### 优势
-- ✅ **完全免费** - 无API限制
-- ✅ **隐私保护** - 所有搜索都在本地进行
-- ✅ **聚合搜索** - 同时搜索Google、Bing、DuckDuckGo等
-- ✅ **无追踪** - 不记录用户搜索历史
-
-### 安装方法
-
-#### Docker方式 (推荐)
+### 1. 安装Ollama
 ```bash
-# 1. 创建searxng目录
-mkdir searxng && cd searxng
+# 下载并安装Ollama
+# 访问 https://ollama.ai 下载Windows版本
 
-# 2. 下载配置文件
-curl -o docker-compose.yml https://raw.githubusercontent.com/searxng/searxng-docker/master/docker-compose.yaml
+# 启动Ollama服务
+ollama serve
 
-# 3. 生成密钥
-sed -i "s|ultrasecretkey|$(openssl rand -hex 32)|g" docker-compose.yml
+# 下载Qwen3模型
+ollama pull qwen3:4b
+```
 
-# 4. 启动服务
+### 2. 安装项目依赖
+```bash
+# 克隆项目
+git clone https://github.com/yourusername/aura-ai.git
+cd aura-ai
+
+# 安装Python依赖
+pip install -r requirements.txt
+```
+
+### 3. 启动Aura
+```bash
+# CLI模式 - 命令行交互
+python main.py
+
+# API模式 - Web服务接口
+python aura_api.py
+```
+
+## 📁 项目结构
+
+```
+D:\Code\Aura\
+├── main.py                    # 主程序入口
+├── aura_api.py                # Web API服务
+├── rag.py                     # RAG知识检索系统
+├── memory.py                  # 记忆管理系统
+├── tools.py                   # 工具集成模块
+├── requirements.txt           # Python依赖
+├── windows_api_config.bat     # Windows网络配置向导
+├── start_aura.sh             # Linux启动脚本
+├── data/                     # 知识库数据目录
+├── db/                       # 向量数据库
+├── logs/                     # 运行日志
+└── memory/                   # 记忆数据存储
+```
+
+## 🔧 使用方法
+
+### CLI模式 (命令行交互)
+```bash
+python main.py
+```
+
+**功能特色:**
+- 💬 直接对话交互
+- 📚 加载知识库: 输入 `加载知识`
+- 🧠 记忆功能: 记住用户偏好
+- 🔍 智能搜索: 自动判断是否需要联网搜索
+
+### API模式 (Web服务)
+```bash
+python aura_api.py
+```
+
+**API端点:**
+- `GET /health` - 健康检查
+- `POST /v1/chat/completions` - OpenAI兼容聊天接口
+- `POST /api/knowledge/load` - 加载知识库
+- `POST /api/memory/add` - 添加记忆
+- `GET /api/memory/get` - 获取记忆
+
+**测试API:**
+```bash
+# 健康检查
+curl http://localhost:5000/health
+
+# 聊天测试
+curl -X POST http://localhost:5000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"messages": [{"role": "user", "content": "你好"}]}'
+```
+
+## 🌐 网络搜索配置
+
+Aura支持多种搜索服务：
+
+### 1. SearxNG (需要自部署)
+SearxNG是开源搜索引擎，需要自己部署实例：
+
+```bash
+# 自己部署(推荐)
+git clone https://github.com/searxng/searxng-docker.git
+cd searxng-docker
 docker-compose up -d
 
-# 5. 测试访问
-curl "http://localhost:8080/search?q=test&format=json"
-```
-
-#### 手动安装 (Linux)
-```bash
-# 1. 安装依赖
-sudo apt update
-sudo apt install python3-dev python3-pip python3-venv uwsgi uwsgi-plugin-python3 git build-essential libxslt-dev zlib1g-dev libffi-dev libssl-dev
-
-# 2. 克隆项目
-cd /usr/local
-sudo git clone https://github.com/searxng/searxng.git
-cd searxng
-
-# 3. 安装searxng
-sudo -H pip3 install -e .
-
-# 4. 创建配置
-sudo cp searx/settings.yml searx/settings_local.yml
-
-# 5. 生成密钥
-sudo sed -i "s/ultrasecretkey/$(openssl rand -hex 32)/g" searx/settings_local.yml
-
-# 6. 启动服务
-python3 searx/webapp.py
-```
-
-### 配置Aura
-```bash
-# 在.env文件中设置
+# 配置API访问
 SEARXNG_URL=http://localhost:8080
 ```
 
----
-
-## 🔍 方法二：Google Custom Search API
-
-### 优势
-- ✅ **免费额度** - 每天100次免费搜索
-- ✅ **Google质量** - 使用Google搜索引擎
-- ✅ **稳定可靠** - Google官方API
-- ✅ **简单易用** - 申请配置简单
-
-### 申请步骤
-
-#### 1. 创建Google Cloud项目
-1. 访问 [Google Cloud Console](https://console.cloud.google.com/)
-2. 点击 **"创建项目"**
-3. 输入项目名称：`Aura-Search-API`
-4. 点击 **"创建"**
-
-#### 2. 启用Custom Search API
-1. 在项目中，转到 **"API和服务"** > **"库"**
-2. 搜索 **"Custom Search API"**
-3. 点击并选择 **"启用"**
-
-#### 3. 创建API密钥
-1. 转到 **"API和服务"** > **"凭据"**
-2. 点击 **"创建凭据"** > **"API密钥"**
-3. 复制生成的API密钥
-4. 建议点击 **"限制密钥"** 设置使用限制
-
-#### 4. 创建自定义搜索引擎
-1. 访问 [Google Custom Search](https://cse.google.com/cse/)
-2. 点击 **"添加"**
-3. 在 **"要搜索的网站"** 中输入 `*` (搜索整个网络)
-4. 点击 **"创建"**
-5. 在控制面板中，点击 **"设置"** > **"基本"**
-6. 复制 **"搜索引擎ID"**
-
-#### 5. 配置Aura
+### 2. Google Custom Search
 ```bash
-# 在.env文件中添加
+# 申请地址: https://console.cloud.google.com/
+# 1. 创建项目并启用Custom Search API
+# 2. 创建API密钥
+# 3. 在 https://cse.google.com/ 创建搜索引擎
+
 GOOGLE_API_KEY=your_api_key_here
-GOOGLE_CSE_ID=your_search_engine_id_here
+GOOGLE_CSE_ID=your_search_engine_id
 ```
 
-### 价格信息
-- **免费额度**: 100次搜索/天
-- **付费价格**: $5/1000次搜索
-- **月费上限**: 约$150/月
-
----
-
-## ⚡ 方法三：Serper API (推荐付费方案)
-
-### 优势
-- ✅ **性价比高** - $50/万次搜索
-- ✅ **免费试用** - 2500次免费搜索
-- ✅ **快速稳定** - 平均响应时间<1秒
-- ✅ **简单易用** - 一个API密钥搞定
-
-### 申请步骤
-
-#### 1. 注册账户
-1. 访问 [Serper.dev](https://serper.dev/)
-2. 点击 **"Get API Key"**
-3. 使用Google或GitHub账户注册
-4. 验证邮箱地址
-
-#### 2. 获取API密钥
-1. 登录后自动跳转到控制台
-2. 复制显示的API密钥
-3. 查看免费额度：2500次搜索
-
-#### 3. 配置Aura
+### 3. Serper API (高性价比)
 ```bash
-# 在.env文件中添加
-SERPER_API_KEY=your_serper_api_key_here
+# 申请地址: https://serper.dev/
+# 免费额度: 2500次搜索
+
+SERPER_API_KEY=your_serper_key_here
 ```
 
-### 价格信息
-- **免费额度**: 2500次搜索
-- **付费价格**: $50/万次搜索
-- **特点**: 无月费，按使用付费
-
----
-
-## 🔥 方法四：SerpAPI (功能最强)
-
-### 优势
-- ✅ **功能丰富** - 支持Google、Bing、Yahoo等多个搜索引擎
-- ✅ **数据详细** - 提供丰富的搜索结果元数据
-- ✅ **高度可靠** - 企业级API服务
-- ✅ **灵活定价** - 多种套餐选择
-
-### 申请步骤
-
-#### 1. 注册账户
-1. 访问 [SerpAPI](https://serpapi.com/)
-2. 点击 **"Sign Up"**
-3. 填写基本信息注册
-4. 验证邮箱地址
-
-#### 2. 获取API密钥
-1. 登录后转到控制台
-2. 在 **"API Key"** 部分复制密钥
-3. 查看免费额度：100次搜索/月
-
-#### 3. 配置Aura
+### 4. Windows配置向导
 ```bash
-# 在.env文件中添加
-SERPAPI_KEY=your_serpapi_key_here
+# Windows用户可直接运行
+windows_api_config.bat
 ```
 
-### 价格信息
-- **免费额度**: 100次搜索/月
-- **基础套餐**: $50/月 (5000次搜索)
-- **专业套餐**: $150/月 (15000次搜索)
-- **企业套餐**: 定制价格
+## 📝 添加知识库
 
----
+### 支持的文件格式
+- `.md` - Markdown文件
+- `.txt` - 纯文本文件
+- `.pdf` - PDF文档
+- `.csv` - CSV数据文件
 
-## 🔧 完整配置示例
+### 添加步骤
+1. 将文档放入 `data/` 目录
+2. 启动Aura CLI模式
+3. 输入 `加载知识` 命令
+4. 选择文件格式（默认.md）
 
-### .env文件配置
+## 🐳 Docker部署
+
+### 快速启动
 ```bash
-# === 搜索服务配置 ===
+# Linux/macOS用户
+./start_aura.sh
 
-# SearxNG本地搜索 (优先级最高)
-SEARXNG_URL=http://localhost:8080
-SEARXNG_SECRET=your_random_secret_key_here
-
-# Google Custom Search (备选方案1)
-GOOGLE_API_KEY=AIzaSyABC123DEF456GHI789JKL012MNO345PQR
-GOOGLE_CSE_ID=123456789012345678901:abcdefghijk
-
-# Serper API (备选方案2)
-SERPER_API_KEY=1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s0t
-
-# SerpAPI (备选方案3)
-SERPAPI_KEY=abcdef123456789ghijklmnop987654321qrstuvw
+# 选择模式:
+# 1) 命令行模式
+# 2) Web API模式
 ```
 
-### 搜索优先级设置
-Aura按以下优先级尝试搜索服务：
-1. **SearxNG** (本地，免费)
-2. **Google Custom Search** (免费额度)
-3. **Serper API** (付费，性价比高)
-4. **SerpAPI** (付费，功能强大)
-
----
-
-## 🛠️ 故障排除
-
-### SearxNG常见问题
-
-**问题1**: SearxNG无法启动
+### 手动Docker操作
 ```bash
-# 检查端口占用
-sudo netstat -tulpn | grep :8080
+# 启动服务
+docker-compose up -d
 
-# 重启Docker容器
-docker-compose restart searxng
-```
-
-**问题2**: 搜索无结果
-```bash
-# 检查配置文件
-docker exec searxng cat /etc/searxng/settings.yml
+# 进入容器使用CLI
+docker exec -it aura_ai python main.py
 
 # 查看日志
-docker logs searxng
+docker-compose logs -f
+
+# 停止服务
+docker-compose down
 ```
 
-### API密钥问题
+## ⚙️ 配置文件
 
-**问题1**: API密钥无效
-- 检查密钥是否正确复制
-- 确认API服务已启用
-- 检查API使用限制设置
-
-**问题2**: 超出配额限制
-- 查看API控制台的使用统计
-- 考虑升级套餐或添加备用API
-- 实施缓存机制减少API调用
-
-### 网络连接问题
-
-**问题1**: 连接超时
+### 环境变量 (.env)
 ```bash
-# 测试网络连接
-curl -I https://www.google.com
-curl -I https://serper.dev
-curl -I https://serpapi.com
+# Ollama配置
+OLLAMA_BASE_URL=http://localhost:11434
+MODEL_NAME=qwen3:4b
+
+# 搜索配置 (选择一种即可)
+SEARXNG_URL=http://localhost:8080
+GOOGLE_API_KEY=your_key
+GOOGLE_CSE_ID=your_id
+SERPER_API_KEY=your_key
+
+# API服务配置
+FLASK_HOST=0.0.0.0
+FLASK_PORT=5000
 ```
 
-**问题2**: DNS解析失败
+## 🔍 常见问题
+
+### Q1: Ollama连接失败
 ```bash
-# 修改DNS设置
-echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+# 检查Ollama服务
+ollama list
+
+# 重启服务
+ollama serve
+
+# 确认端口
+netstat -an | findstr 11434
 ```
 
+### Q2: 模型下载慢
+```bash
+# 设置代理 (如果需要)
+set HTTPS_PROXY=http://proxy:8080
+ollama pull qwen3:4b
+```
+
+### Q3: 搜索功能不工作
+1. 检查网络连接
+2. 运行 `windows_api_config.bat` 配置搜索API
+3. 或部署SearxNG本地实例
+
+### Q4: 知识库加载失败
+1. 确认文档在 `data/` 目录下
+2. 检查文件格式是否支持
+3. 确保文件编码为UTF-8
+
+## 🚀 高级功能
+
+### 1. 自定义工具
+可在 `tools.py` 中添加自定义工具函数
+
+### 2. 记忆管理
+- 自动记住用户偏好
+- 保存对话历史
+- 支持手动添加记忆
+
+### 3. 多模态支持 (计划中)
+- 图像识别
+- 语音交互
+- 文档解析
+
+## 📈 更新日志
+
+### v1.0.0 (2025-06-15)
+- ✨ 基础AI Agent框架
+- 🔍 RAG知识检索系统
+- 💾 长期记忆功能
+- 🛠️ 工具调用支持
+- 🌐 多种搜索服务集成
+- 🐳 Docker容器化部署
+
+## 🤝 贡献
+
+欢迎提交Issue和Pull Request！
+
+## 📄 许可证
+
+MIT License
+
 ---
 
-## 🎯 最佳实践建议
-
-### 1. 多重备份策略
-- 至少配置2个搜索服务
-- 本地SearxNG + 1个云API
-- 监控API使用量，避免超限
-
-### 2. 成本优化
-- 优先使用免费服务
-- 设置API使用上限
-- 定期清理无用的API密钥
-
-### 3. 隐私保护
-- 优先使用SearxNG本地搜索
-- 定期轮换API密钥
-- 避免在日志中记录敏感查询
-
-### 4. 性能优化
-- 设置合理的超时时间
-- 实施搜索结果缓存
-- 监控各API服务的响应时间
-
----
-
-## ❓ 常见问题
-
-**Q: 哪种搜索方式最好？**
-A: 对于个人使用，推荐SearxNG本地部署。对于商业项目，推荐SearxNG + Serper API组合。
-
-**Q: 免费额度用完了怎么办？**
-A: 可以申请多个免费账户，或者升级到付费套餐，或者添加其他搜索服务。
-
-**Q: 搜索结果质量如何？**
-A: Google Custom Search和SerpAPI质量最高，Serper API性价比最好，SearxNG适合隐私保护。
-
-**Q: 如何监控API使用量？**
-A: 在各API服务的控制台可以查看使用统计，也可以在Aura中添加使用量记录。
-
-**Q: 可以只使用一种搜索服务吗？**
-A: 可以，但建议至少配置2种以确保稳定性。修改`tools.py`文件可以调整搜索优先级。
-
----
-
-**配置完成后，重启Aura即可开始使用网络搜索功能！** 🎉
+**让Aura成为你最贴心的AI伙伴！** ✨🤖

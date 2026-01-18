@@ -204,6 +204,20 @@ class AuraAgentUltimate:
         """回忆一个事实"""
         try:
             parts = fact_str.split('/')
+            
+            # 特殊处理：查询所有用户记忆
+            if len(parts) == 2 and parts[1] == "all":
+                category = parts[0]
+                all_facts = self.long_term_memory.memories.get("facts", {}).get(category, {})
+                if not all_facts:
+                    return f"没有找到关于{category}的任何记忆"
+                
+                result = f"关于{category}的记忆:\n"
+                for key, data in all_facts.items():
+                    value = data.get("value", data) if isinstance(data, dict) else data
+                    result += f"- {key}: {value}\n"
+                return result
+            
             if len(parts) != 2:
                 return "格式错误，请使用: category/key"
                 
@@ -211,10 +225,17 @@ class AuraAgentUltimate:
             value = self.long_term_memory.get_fact(category, key)
             
             if value is None:
-                return f"没有找到相关记忆: {category}/{key}"
+                # 尝试模糊匹配
+                all_facts = self.long_term_memory.memories.get("facts", {}).get(category, {})
+                for k, data in all_facts.items():
+                    if key in k:
+                        value = data.get("value", data) if isinstance(data, dict) else data
+                        logger.info(f"模糊匹配记忆: {category}/{k}")
+                        return f"{value}"
+                return f"没有找到相关记忆"
                 
             logger.info(f"记忆已检索: {category}/{key}")
-            return f"{category}/{key}: {value}"
+            return f"{value}"
         except Exception as e:
             logger.error(f"检索记忆错误: {str(e)}")
             return f"回忆出错: {str(e)}"
@@ -233,11 +254,35 @@ class AuraAgentUltimate:
         if any(keyword in query_lower for keyword in knowledge_keywords):
             return True, "search_knowledge"
         
-        # 记忆操作
-        if "记住" in query or "remember" in query_lower:
+        # 记忆操作 - 明确要求记住
+        remember_keywords = ["记住", "记下", "remember", "保存"]
+        if any(keyword in query_lower for keyword in remember_keywords):
             return True, "remember_fact"
         
-        if "回忆" in query or "记得" in query or "recall" in query_lower:
+        # 记忆操作 - 回忆查询
+        recall_keywords = ["回忆", "记得", "recall", "之前说", "上次说", "我说过", "你知道我"]
+        if any(keyword in query_lower for keyword in recall_keywords):
+            return True, "recall_fact"
+        
+        # 🆕 智能判断：用户是否在分享个人信息（应该自动记住）
+        personal_patterns = ["我喜欢", "我爱", "我讨厌", "我是", "我叫", "我的", 
+                            "我最喜欢", "我偏好", "我习惯", "我经常", "我总是"]
+        if any(pattern in query for pattern in personal_patterns):
+            # 用LLM确认是否是值得记住的个人信息
+            check_prompt = f"""判断这句话是否包含用户的个人偏好或信息（值得记住的）：
+"{query}"
+
+只回答 yes 或 no："""
+            try:
+                result = self.llm.invoke(check_prompt).strip().lower()
+                if "yes" in result or "是" in result:
+                    return True, "remember_fact"
+            except:
+                pass
+        
+        # 回忆查询（问自己喜好相关的问题）
+        question_patterns = ["我喜欢什么", "我爱什么", "我是谁", "我叫什么", "我的"]
+        if any(pattern in query for pattern in question_patterns) and "?" in query or "？" in query or "吗" in query or "呢" in query:
             return True, "recall_fact"
         
         # 文件操作
@@ -251,30 +296,79 @@ class AuraAgentUltimate:
     
     def _extract_tool_input(self, query: str, tool_name: str) -> str:
         """从查询中提取工具输入"""
-        # 这里可以添加更智能的参数提取逻辑
         if tool_name == "search_web":
             return query
         elif tool_name == "search_knowledge":
             return query
         elif tool_name == "remember_fact":
-            # 提取要记住的信息
-            if "记住" in query:
-                parts = query.split("记住")
-                if len(parts) > 1:
-                    content = parts[1].strip()
-                    # 简单格式化为 category/key/value
-                    return f"user/preference/{content}"
-            return query
+            # 让LLM提取要记住的信息
+            extract_prompt = f"""从用户的话中提取要记住的信息。
+用户说："{query}"
+
+请用这个格式回答（只回答这一行，不要其他内容）：
+类别/值
+
+例子：
+- "记住我喜欢蓝色" → color/蓝色
+- "记住我叫小明" → name/小明
+- "记住我喜欢吃火锅" → food/火锅
+- "记住我喜欢夏天" → season/夏天
+- "记住我的生日是1月1日" → birthday/1月1日
+
+你的回答："""
+            try:
+                result = self.llm.invoke(extract_prompt).strip()
+                # 清理可能的多余内容
+                if "/" in result:
+                    parts = result.split("/")
+                    category = parts[0].strip().lower()
+                    value = "/".join(parts[1:]).strip()
+                    return f"user/{category}/{value}"
+            except:
+                pass
+            # fallback: 直接存储
+            content = query.replace("记住", "").replace("记下", "").strip()
+            return f"user/general/{content}"
+        
         elif tool_name == "recall_fact":
-            # 提取要回忆的信息
-            return "user/preference"  # 默认查询用户偏好
+            # 让LLM理解用户想查什么
+            extract_prompt = f"""用户想查询什么类型的记忆？
+用户问："{query}"
+
+请只回答一个类别词（如 color/name/food/season/birthday/all），不要其他内容："""
+            try:
+                category = self.llm.invoke(extract_prompt).strip().lower()
+                # 清理可能的多余内容
+                category = category.split()[0] if category else "all"
+                category = category.replace("/", "").replace(":", "")
+                if category and len(category) < 20:
+                    return f"user/{category}"
+            except:
+                pass
+            return "user/all"
         
         return query
+    
+    def _get_conversation_context(self, limit: int = 5) -> str:
+        """获取最近的对话历史作为上下文"""
+        recent = self.long_term_memory.get_recent_conversations(limit)
+        if not recent:
+            return ""
+        
+        context = "最近的对话历史：\n"
+        for conv in recent:
+            context += f"用户: {conv['user_input']}\n"
+            context += f"助手: {conv['ai_response'][:100]}...\n" if len(conv.get('ai_response', '')) > 100 else f"助手: {conv.get('ai_response', '')}\n"
+            context += "\n"
+        return context
     
     def process_query(self, query: str) -> str:
         """处理用户查询 - 终极修复版"""
         try:
             logger.info(f"处理用户查询: {query}")
+            
+            # 获取对话历史上下文
+            history_context = self._get_conversation_context(limit=5)
             
             # 首先判断是否需要工具
             need_tool, tool_name = self._should_use_tool(query)
@@ -285,8 +379,9 @@ class AuraAgentUltimate:
                     tool_input = self._extract_tool_input(query, tool_name)
                     tool_result = self.tools_dict[tool_name](tool_input)
                     
-                    # 基于工具结果生成回答
-                    context_prompt = f"""基于以下工具查询结果回答用户问题：
+                    # 基于工具结果生成回答（包含对话历史）
+                    context_prompt = f"""{history_context}
+基于以下工具查询结果回答用户问题：
 
 用户问题：{query}
 工具结果：{tool_result}
@@ -297,12 +392,12 @@ class AuraAgentUltimate:
                     
                 except Exception as tool_error:
                     logger.error(f"工具调用错误: {tool_error}")
-                    # 如果工具失败，直接用LLM回答
-                    simple_prompt = f"请简洁地回答：{query}"
+                    # 如果工具失败，直接用LLM回答（带历史）
+                    simple_prompt = f"{history_context}\n用户: {query}\n请简洁地回答："
                     response = self.llm.invoke(simple_prompt)
             else:
-                # 直接用LLM回答
-                simple_prompt = f"请简洁地回答：{query}"
+                # 直接用LLM回答（带历史）
+                simple_prompt = f"{history_context}\n用户: {query}\n请简洁地回答："
                 response = self.llm.invoke(simple_prompt)
             
             # 保存对话历史
@@ -407,7 +502,10 @@ def main():
     """主程序入口"""
     try:
         # 创建终极修复版Aura Agent
-        aura = AuraAgentUltimate(model_name="qwen3:4b", verbose=False)
+        # 可选模型: qwen3:4b, qwen2.5:7b
+        import sys
+        model = sys.argv[1] if len(sys.argv) > 1 else "qwen2.5:7b"
+        aura = AuraAgentUltimate(model_name=model, verbose=False)
         
         # 运行命令行界面
         aura.run_cli()

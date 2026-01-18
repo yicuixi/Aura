@@ -4,7 +4,7 @@ general:
   debug: false
 server:
   port: 8080
-  bind_address: "0.0.0.0:8080"
+  bind_address: "0.0.0.0"
   secret_key: "88a487ecd964526fe01a02bc4827173c619cd1633de49e4bce1586680018b9de"  # 建议部署前修改
   # 增加跨域设置，允许所有来源
   cors_allowall: true

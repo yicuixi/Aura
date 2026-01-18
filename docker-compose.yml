@@ -15,7 +15,7 @@ services:
       - ./memory:/app/memory
       - ./.env:/app/.env
     environment:
-      - OLLAMA_BASE_URL=http://host.docker.internal:11435
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
     depends_on:
       - searxng
     restart: unless-stopped

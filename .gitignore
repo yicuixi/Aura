@@ -108,12 +108,19 @@ logs/
 
 # 数据库文件
 db/
+db2/
 *.sqlite3
 *.db
 
 # 向量数据库
 qdrant_data/
 open-webui-data/
+
+# 个人数据文件（知识库可能包含敏感信息）
+data/*.docx
+data/*.pdf
+# 如果整个data目录都是私人的，取消下面注释：
+# data/
 
 # 模型和缓存
 ollama/

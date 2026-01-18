@@ -2,26 +2,34 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import DirectoryLoader, TextLoader, PyPDFLoader, CSVLoader, UnstructuredMarkdownLoader
+from langchain_community.document_loaders import DirectoryLoader, TextLoader, PyPDFLoader, CSVLoader, UnstructuredMarkdownLoader, Docx2txtLoader
 import os
 
 class RAGSystem:
-    def __init__(self, persist_directory="db"):
-        # 初始化嵌入模型 (使用Ollama代替HuggingFace)
-        try:
-            self.embeddings = OllamaEmbeddings(
-                model="qwen3:4b",
-                base_url="http://localhost:11435"
-            )
-            print("已连接到Ollama嵌入模型")
-        except Exception as e:
-            print(f"Ollama嵌入模型初始化失败: {str(e)}")
-            print("回退到HuggingFace嵌入模型...")
-            # 如果Ollama失败，回退到HuggingFace
+    def __init__(self, persist_directory="db", use_m3e=True):
+        # 初始化嵌入模型
+        if use_m3e:
+            # 使用 m3e-base（中文语义匹配专用，效果最好）
+            print("正在加载 m3e-base 嵌入模型...")
             self.embeddings = HuggingFaceEmbeddings(
                 model_name="moka-ai/m3e-base", 
                 model_kwargs={'device': 'cpu'}
             )
+            print("已加载 m3e-base 嵌入模型")
+        else:
+            # 使用 Ollama（通用但效果一般）
+            try:
+                self.embeddings = OllamaEmbeddings(
+                    model="qwen2.5:7b",
+                    base_url="http://localhost:11434"
+                )
+                print("已连接到Ollama嵌入模型")
+            except Exception as e:
+                print(f"Ollama失败: {e}，回退到 m3e-base")
+                self.embeddings = HuggingFaceEmbeddings(
+                    model_name="moka-ai/m3e-base", 
+                    model_kwargs={'device': 'cpu'}
+                )
         
         # 初始化或连接到向量存储
         self.vectorstore = Chroma(
@@ -64,6 +72,8 @@ class RAGSystem:
                         loader = PyPDFLoader(file_path)
                     elif extension == ".csv":
                         loader = CSVLoader(file_path)
+                    elif extension in [".doc", ".docx"]:
+                        loader = Docx2txtLoader(file_path)
                     else:
                         # 对于MD和其他文本文件使用TextLoader
                         loader = TextLoader(file_path, encoding='utf-8')
@@ -79,10 +89,10 @@ class RAGSystem:
             if not documents:
                 raise ValueError(f"无法加载任何文档内容，请检查文件格式和权限")
             
-            # 文本分割
+            # 文本分割（论文等长文档建议用较大的chunk）
             text_splitter = RecursiveCharacterTextSplitter(
-                chunk_size=500,
-                chunk_overlap=50
+                chunk_size=1000,  # 增大块大小，保持上下文完整性
+                chunk_overlap=100
             )
             splits = text_splitter.split_documents(documents)
             print(f"创建了 {len(splits)} 个文本块")
