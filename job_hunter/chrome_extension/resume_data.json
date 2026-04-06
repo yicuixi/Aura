@@ -1,0 +1,230 @@
+{
+  "activePreset": "AI测开",
+  "common": {
+    "personal": {
+      "name": "储琦",
+      "name_en": "Qi Chu",
+      "gender": "女",
+      "birth_date": "2001-08-24",
+      "age": "25",
+      "phone": "18994002093",
+      "email": "yicuixi@outlook.com",
+      "location": "上海市",
+      "hometown": "江苏省南京市",
+      "nationality": "中国",
+      "ethnicity": "汉族",
+      "political_status": "中共党员",
+      "highest_degree": "硕士",
+      "expected_cities": "南京、上海、苏州、杭州、无锡",
+      "id_number": "320106200108240829",
+      "address": "上海市华东师范大学闵行校区",
+      "advisor": "夏勇",
+      "github": "https://github.com/yicuixi",
+      "student_id": "51620920027"
+    },
+    "education": [
+      {
+        "school": "华东师范大学",
+        "college": "精密光谱科学与技术高等研究院",
+        "degree": "硕士",
+        "major": "光学",
+        "start_date": "2023-09",
+        "end_date": "2026-06",
+        "rank": "前30%",
+        "note": "保送"
+      },
+      {
+        "school": "南京工业大学",
+        "college": "数理科学学院",
+        "degree": "本科",
+        "major": "应用物理学",
+        "start_date": "2019-09",
+        "end_date": "2023-06",
+        "rank": "前15%"
+      }
+    ],
+    "languages": [
+      { "name": "英语", "level": "CET-6: 607", "proficiency": "商务" },
+      { "name": "日语", "level": "JLPT N1", "proficiency": "商务" }
+    ],
+    "awards": [
+      { "name": "高教社杯全国大学生数学建模竞赛", "level": "二等奖（国家级）", "org": "中国工业与应用数学学会", "date": "2021-11" },
+      { "name": "江苏省高等数学竞赛", "level": "一等奖", "org": "江苏省高等数学教学研究会", "date": "2022-10" },
+      { "name": "中国大学生计算机设计大赛AI挑战赛", "level": "二等奖（省级）", "org": "中国大学生计算机设计大赛组委会", "date": "2022-07" },
+      { "name": "蓝桥杯江苏赛区C/C++程序设计", "level": "二等奖", "org": "蓝桥杯大赛组委会", "date": "2022-05" },
+      { "name": "江苏省高校大学生物理与实验创新竞赛", "level": "二等奖", "date": "2019-12" },
+    ],
+    "honors": "校优秀毕业生、校三好学生、校优秀学生会干部，多次获得校综合一等奖学金、单项奖学金",
+    "student_activities": [
+      { "org": "华东师范大学精密光谱科学与技术国家重点实验室研究生会", "role": "执行主席", "period": "2024.06-2025.06", "desc": "开展学生骨干培训，与上海交通大学物理与天文学院等十个学院联合举办400余人次中秋活动" },
+      { "org": "南京工业大学数理科学学院学生会", "role": "执行主席", "period": "2021.09-2022.06", "desc": "开展学术沙龙活动，协调学生会大小事务" },
+      { "org": "南京工业大学应物2102班", "role": "新生助理班主任", "period": "2021.08-2022.09", "desc": "协助辅导员开展各项工作，竞选新生班级班干部并展开培训" },
+      { "org": "南京工业大学VEX机器人社团（校四星社团）", "role": "社长", "period": "2020.09-2021.06", "desc": "负责协调社团大小事务，开展C语言技术培训和PS培训" }
+    ],
+    "self_description": "1.曾获"高教社杯"全国大学生数学建模竞赛国二，数学竞赛省一，中国大学生计算机设计大赛人工智能挑战赛省二，蓝桥杯C/C++程序设计省二等国家级省部级奖项十余项，拥有扎实的数学、人工智能基础和团队沟通协作能力。\n2.学生工作经验丰富，沟通能力强。本科和研究生期间均担任过学院学生会主席，有较强的协调管理能力。",
+    "other_info": {
+      "certificates": "英语CET-6\n日语JLPT-N1",
+      "hobbies": "唱歌和基金",
+      "personality": "团队意识强，积极主动"
+    },
+    "preferences": {
+      "target_locations": ["上海", "杭州", "南京", "苏州", "无锡"],
+      "min_salary": 16,
+      "industry_preference": ["AI/人工智能", "互联网", "芯片/半导体", "自动驾驶"]
+    }
+  },
+  "presets": {
+    "AI测开": {
+      "target_position": "测试开发工程师",
+      "skills": "测试框架：pytest、Playwright自动化、k6并发/性能测试、Chrome DevTools/HAR分析、Fiddler\nAI 测试：熟悉LLM推理框架（TensorRT-LLM、vLLM、SGLang），了解模型量化与性能评估\n编程语言：Python、C、SQL\nAI/ML 技术：PyTorch、LangChain、RAG、Agent开发、MCP、Skill\n工具链：Git、Linux、Docker、Jira、CI/CD（GitHub Actions）",
+      "experience": [
+        {
+          "company": "英伟达半导体科技（上海）有限公司",
+          "title": "测试开发工程师",
+          "department": "SW-GPU",
+          "start_date": "2025-06",
+          "end_date": "至今",
+          "desc": "负责NVIDIA API Catalog平台（基于DGX Cloud托管100+预优化AI模型）的质量保障，累计发现228+有效缺陷（含42个P0），参与编写与维护2300+自动化用例。\n\n自动化测试：基于pytest + Playwright构建UI/API/CLI自动化测试框架，覆盖登录、API Key生成、用户权限、模型推理等核心场景；使用k6在双周回归测试中进行并发性能测试；负责自动化失败用例根因分析。\n\n复杂缺陷定位：通过HAR抓包与网络分层分析（DNS/代理/CDN/SSE），定位多环境访问异常、302跨域重定向触发CORS、SSE流式传输下多并行tool_calls前端竞态条件等复杂问题；设计网络层与UI层性能指标交叉验证方案，发现前端TPS计算缺陷。通过NVbug和Jira实现缺陷追踪。\n\nAI 测试分析平台开发：参与AI Log Analysis多智能体测试分析平台开发，采用主Agent编排+专业Subagent路由架构，根据产品与组件自动分派到对应分析agent，覆盖日志分析(Allure)、Issue检索（Elasticsearch）、Git Commit语义搜索（RAG）、Triage汇总等多级协作流水线。负责设计subagent提示词策略与路由规则，实现token自动分批处理大规模测试日志，分析准确率可达85%以上。\n\n效率工具开发：开发DevTest批量日志上传（subcommand集成至测试框架）、Jira批量创建与状态更新、Web Page Content Check Skill等工具，团队测试效率提升70%。"
+        },
+        {
+          "company": "19 Pine AI",
+          "title": "Agent开发工程师",
+          "start_date": "2025-04",
+          "end_date": "2025-05",
+          "desc": "参与智能语音客服系统AI Agent开发和测试，集成语音合成、意图识别和知识检索功能。负责CosyVoice2.0语音模型微调和性能测试，使用Deepgram评估模型准确率。"
+        }
+      ],
+      "projects": [
+        {
+          "name": "本地AI Agent系统开发与测试",
+          "role": "负责人",
+          "start_date": "2025-04",
+          "end_date": "至今",
+          "desc": "构建隐私优先的本地AI助手，基于Ollama本地化部署大模型，集成RAG检索、长期记忆、工具调用与MCP协议接口。\n\n系统开发：基于LangChain实现ReAct推理框架，支持知识检索、网络搜索（SearxNG）、记忆管理等多工具动态调度，适配MCP协议实现标准化工具接口。\n\nRAG系统与优化：构建多路召回检索系统（向量检索+BM25），引入CrossEncoder重排序，检索准确率18%→100%，延迟2.4s→76ms。\n\n评估与工程实践：设计Agent与RAG双维度评估框架：RAG评估覆盖Hit Rate、MRR、Recall及LLM忠实度评估；Agent评估覆盖工具调用准确率、任务完成率与响应时间，接入CMRC2018等多数据集（100+用例）。FastAPI封装RESTful API，Docker Compose容器化部署（含SearxNG搜索服务），GitHub Actions CI/CD自动化测试。"
+        },
+        {
+          "name": "基于深度学习的光学轨道角动量(OAM)识别",
+          "role": "项目负责人",
+          "start_date": "2024-11",
+          "end_date": "2025-04",
+          "desc": "项目简介：利用深度学习模型在少样本、湍流环境下重建和识别光学轨道角动量信息，进行多平台部署。\n\n模型开发与量化测试：基于PyTorch搭建UNet+Attention图像重建网络，双卡并行训练，少样本50%遮挡率场景准确率>90%。完成PyTorch→ONNX→TensorRT全链路转换，设计INT8 PTQ量化测试方案，对比Entropy/MinMax/Percentile三种校准策略，验证量化后精度损失<1%。\n\n多平台性能测试：设计多维度性能测试方案，覆盖NVIDIA GPU（RTX 4060/2080Ti）与华为Atlas 200I NPU，测试延迟、吞吐量、功耗、显存占用等指标。GPU实现4.26x推理加速（23.9→5.6ms），NPU边缘部署10W功耗下达24 FPS。"
+        },
+        {
+          "name": "基于Unity MCP的跳跃游戏开发与质量保证",
+          "start_date": "2025-04",
+          "end_date": "2025-05",
+          "desc": "项目简介：利用Unity MCP与Claude AI协同开发2D跳跃游戏\"CELESTIAL LEAPER\"。\n\n设计结构化Prompt指导AI生成游戏代码和执行代码审查，自动识别UI冲突、事件重复注册等质量问题。系统记录并修复碰撞检测失效、分数计算错误、UI同步等bug。通过性能分析定位瓶颈（对象频繁实例化、每帧查找对象），引入对象池和组件缓存优化，降低GC压力。完成游戏打包并交付可执行demo。"
+        },
+        {
+          "name": "LLVM Project",
+          "role": "贡献者",
+          "desc": "向clang编译器贡献多个PR，修复clang语法分析阶段format格式检查崩溃问题及clang与msvc的C语言语法兼容性问题。"
+        }
+      ]
+    },
+    "Agent开发": {
+      "target_position": "Agent开发工程师",
+      "skills": "编程语言及框架：Python、C/C++、SQL\nAI 开发：PyTorch、LangChain、RAG、Agent开发、MCP、Skill、Prompt Engineering、FastAPI\nAI 推理框架：测试过TensorRT、TensorRT-LLM、vLLM、SGLang\n测试自动化：pytest、Playwright UI 自动化、k6并发测试\n工具与部署：Linux、Docker部署、Git版本管理、Jira缺陷追踪",
+      "experience": [
+        {
+          "company": "英伟达半导体科技（上海）有限公司",
+          "title": "测试开发工程师",
+          "department": "SW-GPU",
+          "start_date": "2025-06",
+          "end_date": "至今",
+          "desc": "负责NVIDIA API Catalog平台质量保障与AI工具开发，该平台托管100+预优化AI模型。\nAI 测试工具开发：参与基于LangChain的日志分析Agent开发，采用主Agent编排+Subagent路由架构，集成Elasticsearch和RAG语义搜索。负责subagent提示词调优，提升测试日志自动分类和根因分析准确率。\n效率工具开发：开发批量日志上传（subcommand集成至测试框架）、Jira批量创建更新、Content Check Skill等自动化工具，团队测试效率提升70%。\n平台测试：使用pytest + Playwright构建UI/API自动化框架；在H100/A100上验证NIM容器部署。"
+        },
+        {
+          "company": "19 Pine AI",
+          "title": "Agent开发工程师",
+          "start_date": "2025-04",
+          "end_date": "2025-05",
+          "desc": "参与智能语音客服系统AI Agent开发和测试，集成语音合成、意图识别和知识检索功能。负责CosyVoice2.0语音模型微调和性能测试，使用Deepgram评估模型准确率和幻觉率。"
+        }
+      ],
+      "projects": [
+        {
+          "name": "本地AI Agent系统开发与测试",
+          "role": "负责人",
+          "start_date": "2025-04",
+          "end_date": "2025-05",
+          "desc": "构建隐私优先的本地AI助手，通过Ollama部署Qwen大模型，集成RAG检索与工具调用。\n系统架构：基于LangChain实现ReAct Agent，支持知识检索、网络搜索、计算等多工具动态调度，适配MCP协议实现标准化工具接口。\nRAG系统：构建多路召回检索系统（向量检索+BM25），引入CrossEncoder重排序；集成Chroma向量库与长期记忆模块。设计RAG评估框架（Hit Rate、MRR），接入CMRC2018数据集，检索准确率18%→100%，延迟2.4s→76ms。\n工程实践：FastAPI封装RESTful API，Docker Compose容器化部署，GitHub Actions CI/CD。"
+        },
+        {
+          "name": "基于深度学习的光学轨道角动量(OAM)识别",
+          "role": "项目负责人",
+          "start_date": "2024-11",
+          "end_date": "2025-04",
+          "desc": "使用PyTorch搭建图像重建网络（UNet+Attention），结合集成学习与TTA策略，少样本场景准确率超90%。完成PyTorch→ONNX→TensorRT全链路转换，INT8 PTQ量化精度损失<1%。GPU实现4.26x推理加速，NPU边缘部署10W功耗下达24 FPS。"
+        },
+        {
+          "name": "基于CBCT的颌骨囊性病变智能诊断系统",
+          "role": "核心成员",
+          "start_date": "2025-01",
+          "end_date": "2025-12",
+          "desc": "使用OpenCV完成图像预处理，基于PyTorch对比ResNet/DenseNet/Inception等backbone，设计多模态特征融合网络，集成图像与BERT提取的类别文本语义特征，通过原型网络实现端到端训练。实现TTA、类别加权损失、决策阈值优化等策略，累计提升准确率8.7%。"
+        },
+        {
+          "name": "LLVM Project",
+          "role": "贡献者",
+          "desc": "向clang编译器贡献多个PR，修复clang语法分析阶段format格式检查崩溃问题及clang与msvc的C语言语法兼容性问题。"
+        },
+        {
+          "name": "基于Unity MCP的跳跃游戏开发与质量保证",
+          "start_date": "2025-04",
+          "end_date": "2025-05",
+          "desc": "利用Unity MCP与Claude AI协同开发2D跳跃游戏。设计结构化Prompt指导AI生成代码和执行代码审查。通过性能分析定位瓶颈，引入对象池和组件缓存优化。"
+        }
+      ]
+    },
+    "推理部署": {
+      "target_position": "AI推理部署工程师",
+      "skills": "编程语言及框架：Python、C/C++、SQL\nAI 开发：PyTorch、LangChain、RAG、Agent开发、MCP、Prompt Engineering\nAI 推理：了解GPTQ/AWQ等主流LLM量化技术，了解剪枝、蒸馏等模型压缩方法；熟悉TensorRT、TensorRT-LLM、vLLM、SGLang推理框架，了解GPU/NPU硬件架构\n测试自动化：pytest、Playwright UI 自动化、k6并发测试\n工具与部署：Linux、Docker部署、Git版本管理、Jira缺陷追踪",
+      "experience": [
+        {
+          "company": "英伟达半导体科技（上海）有限公司",
+          "title": "测试开发工程师",
+          "department": "SW-GPU",
+          "start_date": "2025-06",
+          "end_date": "至今",
+          "desc": "负责NVIDIA API Catalog大规模LLM推理服务平台的质量保障，该平台基于DGX Cloud托管100+预优化AI模型。在H100、A100等GPU上测试TensorRT、vLLM、SGLang等推理后端，对比大模型在不同batch size和并发数下的性能表现。使用pytest和Playwright编写UI/API自动化测试用例，参与测试用例triage和缺陷追踪（Jira/NVbugs）。负责AI log analyzer subagent开发，优化DevTest批量上传日志、Jira批量创建更新状态等工具，团队测试效率提升70%。"
+        },
+        {
+          "company": "19 Pine AI",
+          "title": "Agent开发工程师",
+          "start_date": "2025-04",
+          "end_date": "2025-05",
+          "desc": "参与智能语音客服系统AI Agent开发和测试，集成语音合成、意图识别和知识检索功能。负责CosyVoice2.0语音模型微调和性能测试，监控模型训练负载、内存占用和执行时间。"
+        }
+      ],
+      "projects": [
+        {
+          "name": "基于深度学习的光学轨道角动量(OAM)识别",
+          "role": "项目负责人",
+          "start_date": "2024-11",
+          "end_date": "2025-04",
+          "desc": "利用深度学习模型在少样本、湍流环境下重建和识别光学轨道角动量信息，完成从模型训练到多平台量化部署的全链路优化。\n使用PyTorch搭建图像重建网络（UNet+Attention），双卡并行训练，结合集成学习与TTA策略，少样本场景下准确率超90%。\n完成PyTorch→ONNX→TensorRT全链路转换，INT8 PTQ量化（对比三种校准策略），模型压缩52%，准确率损失<1%。在NVIDIA RTX 4060上实现4.26x加速（23.9→5.6ms），功耗降低37%；完成华为Atlas 200I NPU边缘部署，4W功耗下达23 FPS。设计多平台性能测试框架，覆盖延迟、吞吐量、功耗、BER、PSNR等指标。"
+        },
+        {
+          "name": "基于CBCT的颌骨囊性病变智能诊断系统",
+          "role": "核心成员",
+          "start_date": "2025-01",
+          "end_date": "2025-12",
+          "desc": "使用OpenCV完成图像预处理，基于PyTorch对比ResNet/DenseNet/Inception等backbone，设计多模态特征融合网络，集成图像与BERT文本语义特征，通过原型网络实现端到端训练。实现TTA、类别加权损失、决策阈值优化等策略，累计提升准确率8.7%。建立参数搜索框架，测试1000+组配置，使用Grad-CAM++实现模型可视化分析。"
+        },
+        {
+          "name": "本地AI Agent系统部署与测试",
+          "role": "负责人",
+          "start_date": "2025-04",
+          "end_date": "2025-05",
+          "desc": "构建隐私优先的本地AI助手，通过Ollama实现大模型本地化部署，Docker容器化SearxNG搜索服务。采用LangChain构建ReAct Agent，实现多工具动态调度，FastAPI封装RESTful API。设计RAG评估框架（Hit Rate、MRR、Faithfulness），接入CMRC2018数据集，准确率18%→100%，检索延迟2.4s→76ms。"
+        },
+        {
+          "name": "LLVM Project",
+          "role": "贡献者",
+          "desc": "向clang编译器贡献多个PR，修复clang语法分析阶段format格式检查崩溃问题及clang与msvc的C语言语法兼容性问题。"
+        }
+      ]
+    }
+  }
+}

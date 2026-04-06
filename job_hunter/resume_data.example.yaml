@@ -1,0 +1,104 @@
+# ============================================================
+# 简历数据模板 — 复制为 resume_data.yaml 并填入你的真实信息
+# 此文件用于网页表单自动填写，请确保信息准确
+# ============================================================
+
+personal:
+  name: "储琦"
+  name_en: "Qi Chu"
+  gender: "男"
+  birth_date: "2001-08-24"
+  phone: "18994002094"
+  email: "yicuixi@outlook.com"
+  wechat: ""
+  location: "上海"
+  nationality: "中国"
+  ethnicity: "汉族"
+  political_status: "中共党员"
+
+education:
+  - school: "华东师范大学"
+    degree: "硕士"
+    major: "光学"
+    start_date: "2023-09"
+    end_date: "2026-06"
+    gpa: ""
+    rank: "前30%"
+    is_985: true
+    is_211: true
+
+  - school: "南京工业大学"
+    degree: "本科"
+    major: "应用物理学"
+    start_date: "2019-09"
+    end_date: "2023-06"
+    gpa: ""
+    rank: "前15%"
+    is_985: false
+    is_211: false
+
+languages:
+  - name: "英语"
+    level: "CET-6: 607"
+  - name: "日语"
+    level: "JLPT N1"
+
+skills:
+  programming: ["Python", "C/C++", "SQL"]
+  ai: ["PyTorch", "LangChain", "RAG", "Agent", "MCP", "Prompt Engineering"]
+  inference: ["TensorRT", "TensorRT-LLM", "vLLM", "SGLang", "INT8/FP16量化", "ONNX"]
+  testing: ["pytest", "Playwright", "k6", "Docker", "Git", "Jira", "GitHub Actions"]
+
+experience:
+  - company: "NVIDIA"
+    title: "测试开发工程师实习生"
+    start_date: "2025-06"
+    end_date: "至今"
+    location: "上海"
+    highlights:
+      - "负责NVIDIA API Catalog大规模LLM推理平台质量保障"
+      - "参与LangChain Log Analysis Agent开发，优化子Agent Prompt"
+      - "搭建pytest+Playwright UI/API自动化测试框架"
+      - "NIM容器部署验证，推理性能基准测试"
+
+  - company: "19 Pine AI"
+    title: "Agent开发工程师实习生"
+    start_date: "2025-04"
+    end_date: "2025-05"
+    location: ""
+    highlights:
+      - "AI语音客服Agent开发与测试"
+      - "CosyVoice 2.0语音模型微调"
+
+projects:
+  - name: "LLM Agent System"
+    role: "开发者 & 测试"
+    period: "2025"
+    highlights:
+      - "基于Ollama本地AI助手，集成RAG、Web搜索、工具调用"
+      - "ReAct Agent + MCP协议"
+      - "混合检索：向量+BM25+CrossEncoder重排"
+
+  - name: "深度学习光学OAM识别"
+    role: "项目负责人"
+    period: "2024-11 ~ 2025-04"
+    highlights:
+      - "UNet+Attention模型，PyTorch→ONNX→TensorRT量化部署"
+      - "RTX 4060上4.26x加速，华为Atlas NPU 23FPS"
+
+awards:
+  - "全国大学生数学建模竞赛 二等奖（国家级）"
+  - "江苏省高等数学竞赛 一等奖"
+  - "中国大学生计算机设计大赛（AI挑战赛）二等奖（省级）"
+
+resume_file: "./resume.pdf"
+
+# 求职意向 — 用于匹配评分
+job_preferences:
+  target_positions:
+    - "测试开发工程师"
+    - "模型推理框架优化"
+    - "Agent开发"
+  target_locations: ["上海", "杭州", "南京", "江苏"]
+  min_salary: 16  # 千/月
+  industry_preference: ["AI/人工智能", "互联网", "芯片/半导体"]

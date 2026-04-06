@@ -1,0 +1,15 @@
+/* JobHunter AI 填表助手 — Content Script Styles */
+
+.jh-filled {
+  outline: 2px solid #22c55e !important;
+  outline-offset: 1px !important;
+  background-color: rgba(34, 197, 94, 0.08) !important;
+  transition: outline 0.3s ease, background-color 0.3s ease !important;
+}
+
+.jh-fill-error {
+  outline: 2px solid #ef4444 !important;
+  outline-offset: 1px !important;
+  background-color: rgba(239, 68, 68, 0.06) !important;
+  transition: outline 0.3s ease, background-color 0.3s ease !important;
+}

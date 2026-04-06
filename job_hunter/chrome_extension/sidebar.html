@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobHunter AI</title>
+  <link rel="stylesheet" href="sidebar.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <img src="icons/icon.svg" alt="" class="logo">
+        <h1>AI 填表助手</h1>
+      </div>
+      <div class="status" id="statusBar">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">就绪</span>
+      </div>
+    </header>
+
+    <!-- Preset Selector -->
+    <section class="section">
+      <div class="preset-row">
+        <label for="presetSelect">简历版本</label>
+        <select id="presetSelect">
+          <option value="AI测开">AI测开</option>
+          <option value="Agent开发">Agent开发</option>
+          <option value="推理部署">推理部署</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Primary Action -->
+    <section class="section">
+      <button class="btn-primary" id="btnAiFill">
+        <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18">
+          <path d="M10 1L3 5.5v9L10 19l7-4.5v-9L10 1zm0 2.2l4.8 3.1L10 9.3 5.2 6.3 10 3.2zM4.5 7.5L9.5 10.5v5.7l-5-3.2V7.5zm6 8.9v-5.7l5-3v5.5l-5 3.2z"/>
+        </svg>
+        AI 智能填写
+      </button>
+      <div class="sub-actions">
+        <button class="btn-secondary" id="btnExtract">检测字段</button>
+        <button class="btn-secondary" id="btnClear">清空结果</button>
+      </div>
+    </section>
+
+    <!-- Fields Summary -->
+    <section class="section card" id="fieldsSection" style="display:none">
+      <div class="section-header">
+        <h3>页面字段</h3>
+        <span class="badge" id="fieldCount">0</span>
+      </div>
+      <div class="field-tags" id="fieldSummary"></div>
+    </section>
+
+    <!-- Fill Results -->
+    <section class="section card" id="resultsSection" style="display:none">
+      <div class="section-header">
+        <h3>填写结果</h3>
+        <span class="badge" id="resultCount">0/0</span>
+      </div>
+      <div class="results-list" id="resultsList"></div>
+    </section>
+
+    <!-- Resume Data (compact) -->
+    <section class="section card resume-compact">
+      <div class="resume-compact-row">
+        <span class="resume-status" id="resumeStatus">加载中...</span>
+        <button class="btn-link" id="btnImportResume">导入</button>
+        <input type="file" id="fileResume" accept=".json" style="display:none">
+      </div>
+      <textarea id="resumeEditor" style="display:none"></textarea>
+    </section>
+
+    <!-- Settings -->
+    <section class="section card">
+      <div class="section-header clickable" id="settingsHeader">
+        <h3>设置</h3>
+        <span class="toggle-icon" id="settingsToggleIcon">&#9654;</span>
+      </div>
+      <div class="collapsible" id="settingsPanel">
+        <div class="setting-row">
+          <label>提供商</label>
+          <select id="settingProvider">
+            <option value="ollama">Ollama (本地)</option>
+            <option value="openai">OpenAI 兼容 API</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <label for="settingModel">模型</label>
+          <input type="text" id="settingModel" value="qwen3:4b">
+        </div>
+        <!-- Ollama settings -->
+        <div id="ollamaSettings">
+          <div class="setting-row">
+            <label for="settingUrl">Ollama URL</label>
+            <input type="text" id="settingUrl" value="http://localhost:11434">
+          </div>
+          <div class="setting-row">
+            <label for="settingGpu">GPU 数量</label>
+            <input type="number" id="settingGpu" value="99" min="0">
+          </div>
+        </div>
+        <!-- OpenAI-compatible settings -->
+        <div id="openaiSettings" style="display:none">
+          <div class="setting-row">
+            <label for="settingBaseUrl">Base URL</label>
+            <input type="text" id="settingBaseUrl"
+                   value="https://integrate.api.nvidia.com/v1"
+                   placeholder="https://...">
+          </div>
+          <div class="setting-row">
+            <label for="settingApiKey">API Key</label>
+            <input type="password" id="settingApiKey" placeholder="nvapi-...">
+          </div>
+        </div>
+        <div class="sub-actions">
+          <button class="btn-secondary" id="btnSaveSettings">保存设置</button>
+          <button class="btn-secondary" id="btnTestConnection">测试连接</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="sidebar.js"></script>
+</body>
+</html>
