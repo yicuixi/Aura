@@ -1,6 +1,4 @@
 # Docker Compose for Aura AI - Web API Mode
-version: '3.8'
-
 services:
   aura-api:
     build:
@@ -17,8 +15,6 @@ services:
       - ./.env:/app/.env
     environment:
       - OLLAMA_BASE_URL=http://host.docker.internal:11435
-      - FLASK_HOST=0.0.0.0
-      - FLASK_PORT=5000
     depends_on:
       - searxng
     restart: unless-stopped
@@ -35,7 +31,7 @@ services:
     image: searxng/searxng:latest
     container_name: aura_searxng
     ports:
-      - "8088:8080"
+      - "8089:8080"
     volumes:
       - ./docker/searxng/settings:/etc/searxng:rw
     environment:

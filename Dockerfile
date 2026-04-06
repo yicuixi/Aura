@@ -24,7 +24,7 @@ RUN mkdir -p db logs memory data
 
 # Set environment variables
 ENV PYTHONPATH=/app
-ENV OLLAMA_BASE_URL=http://host.docker.internal:11435
+ENV OLLAMA_BASE_URL=http://host.docker.internal:11434
 
 # Expose port
 EXPOSE 5000
@@ -32,4 +32,4 @@ EXPOSE 5000
 # Note: No health check needed for CLI mode
 
 # Default command
-CMD ["python", "aura.py"]
+CMD ["python", "aura_react.py"]

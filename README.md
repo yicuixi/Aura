@@ -47,35 +47,35 @@ pip install -r requirements.txt
 ### 3. 启动Aura
 ```bash
 # CLI模式 - 命令行交互
-python main.py
+python aura_react.py
 
 # API模式 - Web服务接口
-python aura_api.py
+uvicorn api:app --host 0.0.0.0 --port 5000
 ```
 
 ## 📁 项目结构
 
 ```
-D:\Code\Aura\
-├── main.py                    # 主程序入口
-├── aura_api.py                # Web API服务
+Aura/
+├── aura_react.py              # ReAct Agent 主入口
+├── api.py                     # FastAPI Web API
 ├── rag.py                     # RAG知识检索系统
 ├── memory.py                  # 记忆管理系统
 ├── tools.py                   # 工具集成模块
+├── mcp_server.py              # MCP知识库服务
 ├── requirements.txt           # Python依赖
-├── windows_api_config.bat     # Windows网络配置向导
-├── start_aura.sh             # Linux启动脚本
-├── data/                     # 知识库数据目录
-├── db/                       # 向量数据库
-├── logs/                     # 运行日志
-└── memory/                   # 记忆数据存储
+├── job_hunter/                # 自动求职模块
+├── evaluation/                # 评估框架
+├── data/                      # 知识库数据目录
+├── docker/                    # Docker配置
+└── reports/                   # 评估报告
 ```
 
 ## 🔧 使用方法
 
 ### CLI模式 (命令行交互)
 ```bash
-python main.py
+python aura_react.py
 ```
 
 **功能特色:**
@@ -86,15 +86,14 @@ python main.py
 
 ### API模式 (Web服务)
 ```bash
-python aura_api.py
+uvicorn api:app --host 0.0.0.0 --port 5000
 ```
 
 **API端点:**
 - `GET /health` - 健康检查
-- `POST /v1/chat/completions` - OpenAI兼容聊天接口
-- `POST /api/knowledge/load` - 加载知识库
-- `POST /api/memory/add` - 添加记忆
-- `GET /api/memory/get` - 获取记忆
+- `POST /chat` - 聊天接口
+- `POST /knowledge/add` - 添加知识
+- `GET /knowledge/search` - 知识检索
 
 **测试API:**
 ```bash
@@ -181,7 +180,7 @@ windows_api_config.bat
 docker-compose up -d
 
 # 进入容器使用CLI
-docker exec -it aura_ai python main.py
+docker exec -it aura_ai python aura_react.py
 
 # 查看日志
 docker-compose logs -f

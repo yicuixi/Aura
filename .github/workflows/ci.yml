@@ -38,4 +38,5 @@ jobs:
         python -c "import rag; print('rag.py OK')"
         python -c "import memory; print('memory.py OK')"
         python -c "import tools; print('tools.py OK')"
+        python -c "import api; print('api.py OK')"
 

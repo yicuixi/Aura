@@ -1,57 +1,36 @@
-# Aura AI Assistant - 核心依赖
-# 更新时间: 2025-06-12
+# Aura AI Assistant
+# 更新: 2026-03-04
 
-# === 核心框架 ===
-langchain>=0.3.0
-langchain-community>=0.3.0
-langchain-core>=0.3.0
+# 核心框架
+langchain>=1.2.0
+langchain-classic>=1.0.0
+langchain-community>=0.4.0
+langchain-core>=1.2.0
+langchain-text-splitters>=1.1.0
+langchain-ollama>=1.0.0
 
-# === LLM支持 ===
-# Ollama通过HTTP API调用，无需额外包
-
-# === 向量数据库 ===
+# 向量数据库 + 检索
 chromadb>=0.5.0
-
-# === 文本处理和嵌入 ===
 sentence-transformers>=2.7.0
+rank_bm25>=0.2.2
 
-# === 网络请求 ===
+# 基础
 requests>=2.31.0
-
-# === 环境配置 ===
 python-dotenv>=1.0.0
+pydantic>=2.0.0
+pyyaml>=6.0
 
-# === 数据处理 ===
-pandas>=2.1.0
+# 安全与隐私
+cryptography>=43.0.0
 
-# === 文档加载器（按需安装） ===
-# 如果需要PDF支持，取消注释：
-# pypdf>=4.0.0
+# 安全与隐私
+cryptography>=42.0.0
 
-# 如果需要CSV支持，取消注释：
-# python-csv
+# Web API
+fastapi>=0.109.0
+uvicorn>=0.27.0
 
-# 如果需要Markdown支持，取消注释：
-# python-markdown
-
-# === Web界面（Web API模式必需） ===
-flask>=3.0.0
-
-# === Web界面（可选） ===
-# 如果需要WebSocket支持，取消注释：
-# flask-socketio>=5.3.0
-
-# === 性能监控（可选） ===
-# 如果需要性能监控，取消注释：
-# psutil>=5.9.0
-
-# === 开发工具（可选） ===
-# 如果需要测试，取消注释：
-# pytest>=7.0.0
-# pytest-cov>=4.0.0
-
-# === 注意事项 ===
-# 1. 某些包（如torch）很大，仅在需要时安装
-# 2. 使用 >= 而不是 == 以避免版本冲突
-# 3. 核心功能只需要上面的基础包
-# 4. 可选功能的包已注释，按需启用
+# JobHunter（自动求职）
+browser-use>=0.12.0
+playwright>=1.49.0
+# 注意：使用系统 Edge 浏览器，无需 playwright install chromium

@@ -5,10 +5,17 @@ Aura AI - 完整 ReAct Agent 版本
 
 import os
 import logging
+
+# 兼容 langchain 0.3.x 和 1.x
+try:
+    from langchain_classic.agents import AgentExecutor, create_react_agent
+    from langchain_classic.memory import ConversationBufferWindowMemory
+except ImportError:
+    from langchain.agents import AgentExecutor, create_react_agent
+    from langchain.memory import ConversationBufferWindowMemory
+
+from langchain_core.tools import Tool
 from langchain_community.llms import Ollama
-from langchain.agents import AgentExecutor, create_react_agent
-from langchain.tools import Tool
-from langchain.memory import ConversationBufferWindowMemory
 from langchain_core.prompts import PromptTemplate
 
 from rag import RAGSystem
@@ -96,7 +103,7 @@ class AuraReActAgent:
     
     def _create_tools(self):
         """创建工具"""
-        return [
+        base_tools = [
             Tool(
                 name="search_web",
                 func=tool_functions.search_web,
@@ -118,10 +125,26 @@ class AuraReActAgent:
                 description="回忆用户的偏好或信息。输入: 类别名，例如: color 或 all"
             ),
         ]
+
+        # JobHunter 求职工具集
+        try:
+            from job_hunter.agent_tools import get_langchain_tools
+            base_tools.extend(get_langchain_tools())
+            logger.info("JobHunter 工具已加载")
+        except ImportError:
+            logger.debug("JobHunter 模块未安装，跳过求职工具")
+
+        return base_tools
     
     def _search_knowledge(self, query: str) -> str:
-        """搜索知识库"""
-        results = self.rag_system.search(query, k=3)
+        """搜索知识库（多路召回+重排序）"""
+        try:
+            # 优先使用混合检索
+            results = self.rag_system.hybrid_search(query, k=3, use_rerank=True)
+        except AttributeError:
+            # 兼容旧版本
+            results = self.rag_system.search(query, k=3)
+        
         if results:
             return "\n".join([doc.page_content[:200] for doc in results])
         return "知识库中没有找到相关信息"

@@ -15,12 +15,32 @@ import json
 import argparse
 from datetime import datetime
 
-# 添加项目根目录到路径
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from aura_react import AuraReActAgent
 from evaluation.rag_eval import RAGEvaluator
 from evaluation.agent_eval import AgentEvaluator
+
+
+class DeepSeekJudge:
+    """DeepSeek API wrapper compatible with langchain .invoke() interface"""
+
+    def __init__(self, api_key: str, model: str = "deepseek-chat"):
+        from openai import OpenAI
+        self.client = OpenAI(
+            api_key=api_key,
+            base_url="https://api.deepseek.com",
+        )
+        self.model = model
+
+    def invoke(self, prompt: str) -> str:
+        resp = self.client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0,
+            max_tokens=16,
+        )
+        return resp.choices[0].message.content.strip()
 
 
 def load_test_dataset(filepath: str = "evaluation/test_dataset.json") -> dict:
@@ -29,42 +49,58 @@ def load_test_dataset(filepath: str = "evaluation/test_dataset.json") -> dict:
         return json.load(f)
 
 
-def run_rag_evaluation(agent: AuraReActAgent, test_cases: list, use_llm: bool = False) -> dict:
+def _build_retrieval_qa(agent: AuraReActAgent):
+    """构建 RetrievalQA 链，直接用 RAG 检索+LLM 生成，不走 Agent 工具链"""
+    try:
+        from langchain.chains import RetrievalQA
+    except ImportError:
+        from langchain_classic.chains import RetrievalQA
+
+    retriever = agent.rag_system.vectorstore.as_retriever(search_kwargs={"k": 3})
+    return RetrievalQA.from_chain_type(
+        llm=agent.llm,
+        chain_type="stuff",
+        retriever=retriever,
+        return_source_documents=True,
+    )
+
+
+def run_rag_evaluation(agent: AuraReActAgent, test_cases: list, use_llm: bool = False, judge_llm=None) -> dict:
     """运行RAG评估"""
     print("\n" + "=" * 60)
-    print("📚 RAG系统评估")
+    print("RAG系统评估")
     print("=" * 60)
-    
-    # 创建评估器
+
+    retrieval_qa = _build_retrieval_qa(agent) if use_llm else None
+    eval_llm = judge_llm if judge_llm else (agent.llm if use_llm else None)
+
     rag_evaluator = RAGEvaluator(
         rag_system=agent.rag_system,
-        retrieval_qa=None,
-        llm=agent.llm if use_llm else None,
-        agent=agent  # 传入 Agent 用于 Faithfulness 评估
+        retrieval_qa=retrieval_qa,
+        llm=eval_llm,
+        agent=None,
     )
-    
-    # 评估检索质量
-    print("\n⏳ 正在评估检索质量...")
+
+    print("\n正在评估检索质量...")
     retrieval_results = rag_evaluator.evaluate_retrieval(test_cases, k=3)
-    
-    print(f"\n📊 检索评估结果:")
-    print(f"   • Hit Rate@3:     {retrieval_results['hit_rate']:.2%}")
-    print(f"   • MRR:            {retrieval_results['mrr']:.3f}")
-    print(f"   • Avg Recall:     {retrieval_results['avg_recall']:.2%}")
-    print(f"   • Avg Time:       {retrieval_results['avg_retrieval_time_ms']:.0f}ms")
-    
-    # 评估 Faithfulness（使用 Agent 回答 + LLM 评估）
+
+    print(f"\n检索评估结果:")
+    print(f"   Hit Rate@3:     {retrieval_results['hit_rate']:.2%}")
+    print(f"   MRR:            {retrieval_results['mrr']:.3f}")
+    print(f"   Avg Recall:     {retrieval_results['avg_recall']:.2%}")
+    print(f"   Avg Time:       {retrieval_results['avg_retrieval_time_ms']:.0f}ms")
+
     if use_llm:
-        print("\n⏳ 正在评估 Faithfulness (使用LLM自动评估)...")
-        # 只取前5个用例进行 Faithfulness 评估（节省时间）
-        faith_test_cases = test_cases[:5]
-        faith_results = rag_evaluator.evaluate_agent_faithfulness(faith_test_cases)
-        
-        print(f"\n📝 Faithfulness 评估结果:")
-        print(f"   • Faithfulness:   {faith_results['avg_faithfulness']:.2f}/5 (回答忠于上下文)")
-        print(f"   • Relevance:      {faith_results['avg_relevance']:.2f}/5 (回答切题)")
-        print(f"   • 测试用例数:     {faith_results['total_cases']}")
-    
+        print("\n正在评估 Faithfulness (RAG 直接生成 + LLM-as-Judge)...")
+        faith_test_cases = test_cases[:10]
+        faith_results = rag_evaluator.evaluate_generation(faith_test_cases)
+
+        print(f"\nFaithfulness 评估结果:")
+        print(f"   Faithfulness:   {faith_results['avg_faithfulness']:.2f}/5")
+        print(f"   Relevance:      {faith_results['avg_relevance']:.2f}/5")
+        print(f"   Avg Gen Time:   {faith_results['avg_generation_time_ms']:.0f}ms")
+        print(f"   测试用例数:     {faith_results['total_cases']}")
+
     return {
         "retrieval": retrieval_results,
         "generation": rag_evaluator.to_dict(),
@@ -162,6 +198,7 @@ def main():
     parser.add_argument("--save", action="store_true", help="保存评估报告")
     parser.add_argument("--llm-eval", action="store_true", help="使用LLM评估生成质量")
     parser.add_argument("--model", type=str, default="qwen2.5:7b", help="使用的模型名称")
+    parser.add_argument("--deepseek-judge", type=str, default=None, help="DeepSeek API key, 用DeepSeek当Judge替代本地模型自评")
     
     args = parser.parse_args()
     
@@ -206,13 +243,21 @@ def main():
     rag_report = ""
     agent_report = ""
     
+    # 构建 Judge LLM
+    judge_llm = None
+    if args.deepseek_judge:
+        print("\n🧠 使用 DeepSeek 作为外部 Judge（替代本地模型自评）")
+        judge_llm = DeepSeekJudge(api_key=args.deepseek_judge)
+        args.llm_eval = True
+
     # 运行RAG评估
     if run_rag and dataset.get("rag_tests"):
         try:
             rag_results = run_rag_evaluation(
                 agent, 
                 dataset["rag_tests"],
-                use_llm=args.llm_eval
+                use_llm=args.llm_eval,
+                judge_llm=judge_llm,
             )
             rag_report = rag_results.get("report", "")
         except Exception as e:

@@ -130,6 +130,11 @@ models/
 memory.json
 env_path.txt
 
+# 安全相关（绝对不能提交）
+.env
+.aura_salt
+logs/audit.log
+
 # 备份文件
 backup*/
 deleted/
@@ -161,3 +166,76 @@ Thumbs.db
 *.bak
 temp_to_delete/
 temp_delete_*
+
+# JobHunter - 隐私数据
+job_hunter/resume_data.yaml
+job_hunter/config.yaml
+job_hunter/data/
+job_hunter/*.db
+
+# JobHunter - 一次性脚本（含硬编码飞书凭据）
+job_hunter/grant_all_by_openid.py
+job_hunter/grant_permissions.py
+job_hunter/fix_folder_perm.py
+job_hunter/import_to_feishu.py
+job_hunter/gen_feishu_docs.py
+job_hunter/xhs_to_feishu.py
+job_hunter/write_jobs_to_feishu.py
+job_hunter/import_ai_doc.py
+job_hunter/organize_feishu.py
+
+# JobHunter - 爬虫调试脚本和临时数据
+job_hunter/analyze_*.py
+job_hunter/check_others.py
+job_hunter/decompress_*.py
+job_hunter/export_*.py
+job_hunter/extract_*.py
+job_hunter/final_solution.py
+job_hunter/gen_markdowns.py
+job_hunter/incremental_scrape.py
+job_hunter/inspect_globals.py
+job_hunter/intercept_network.py
+job_hunter/multi_selector_extract.py
+job_hunter/parse_api_responses.py
+job_hunter/preview_mianjing.py
+job_hunter/scrape_tencent_docs*.py
+job_hunter/scrape_xhs_favorites.py
+job_hunter/fetch_xhs_content.py
+job_hunter/SCRAPING_SUMMARY.md
+job_hunter/ai_doc_content.json
+job_hunter/xhs_all_favorites.json
+job_hunter/*.txt
+job_hunter/*.html
+job_hunter/*.png
+job_hunter/scraped_data/
+job_hunter/feishu_docs/
+job_hunter/cache/
+job_hunter/__pycache__/
+
+# Cursor rules/skills (含飞书凭据，仅本地使用)
+.cursor/rules/
+.cursor/skills/
+
+# 个人简历（隐私）
+resume_agent_gpu_en.md
+
+# data 临时/未跟踪数据
+data/0201_new/
+data/0202/
+data/*.rar
+
+# 临时脚本和数据
+tmp_*.py
+feishu_*.json
+feishu_*.txt
+feishu_*.png
+test_output.txt
+test_scorer.py
+_temp_*.txt
+
+# 个人简历文本
+resume_version_*.txt
+
+# Claude / Playwright 本地配置
+.claude/
+.playwright-mcp/

@@ -58,7 +58,7 @@ if errorlevel 1 (
 REM Check Ollama
 echo.
 echo Checking Ollama service...
-curl -s http://localhost:11435/api/tags >nul 2>&1
+curl -s http://localhost:11434/api/tags >nul 2>&1
 if errorlevel 1 (
     echo ERROR: Ollama service not running
     echo Please install and start Ollama first:
@@ -128,10 +128,10 @@ echo Aura AI Setup Complete!
 echo.
 echo Startup Options:
 echo 1. Local Python environment:
-echo    python aura.py
+echo    python aura_react.py
 echo.
 echo 2. Web API mode:
-echo    python aura_api.py
+echo    uvicorn api:app --host 0.0.0.0 --port 5000
 echo.
 echo 3. Docker mode:
 echo    start_aura.bat
@@ -143,7 +143,7 @@ echo.
 set /p start_now="Start Aura now? (y/N): "
 if /i "!start_now!"=="y" (
     echo Starting Aura AI...
-    python aura.py
+    python aura_react.py
 )
 
 pause

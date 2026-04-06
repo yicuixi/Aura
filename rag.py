@@ -1,9 +1,33 @@
-from langchain.embeddings import HuggingFaceEmbeddings
+# 兼容 langchain 0.3.x 和 1.x
+try:
+    from langchain_community.embeddings import HuggingFaceEmbeddings
+except ImportError:
+    from langchain.embeddings import HuggingFaceEmbeddings
+
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+try:
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+except ImportError:
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 from langchain_community.document_loaders import DirectoryLoader, TextLoader, PyPDFLoader, CSVLoader, UnstructuredMarkdownLoader, Docx2txtLoader
+from langchain_community.retrievers import BM25Retriever
+
+try:
+    from langchain_classic.retrievers import EnsembleRetriever
+except ImportError:
+    from langchain.retrievers import EnsembleRetriever
 import os
+
+# 可选：重排序模型（首次使用会自动下载）
+try:
+    from sentence_transformers import CrossEncoder
+    RERANKER_AVAILABLE = True
+except ImportError:
+    RERANKER_AVAILABLE = False
+    print("提示: 安装 sentence-transformers 可启用重排序功能")
 
 class RAGSystem:
     def __init__(self, persist_directory="db", use_m3e=True):
@@ -37,6 +61,20 @@ class RAGSystem:
             embedding_function=self.embeddings
         )
         print(f"已连接到知识库位置: {persist_directory}")
+        
+        # 初始化BM25检索器（延迟加载，需要文档）
+        self.bm25_retriever = None
+        self.all_documents = []  # 保存文档用于BM25
+        
+        # 初始化重排序模型
+        self.reranker = None
+        if RERANKER_AVAILABLE:
+            try:
+                # 使用轻量级中文重排序模型
+                self.reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2', max_length=512)
+                print("已加载重排序模型")
+            except Exception as e:
+                print(f"重排序模型加载失败: {e}")
     
     def add_documents(self, docs_path, extension=".md"):
         """添加文档到知识库"""
@@ -104,9 +142,9 @@ class RAGSystem:
             self.vectorstore.add_documents(splits)
             print("文档已添加到知识库")
             
-            # 持久化保存
-            self.vectorstore.persist()
-            print("知识库已持久化保存")
+            # 更新BM25检索器
+            self.all_documents.extend(splits)
+            self._init_bm25_retriever()
             
             return True
         except Exception as e:
@@ -115,9 +153,71 @@ class RAGSystem:
             print(traceback.format_exc())
             raise e
     
+    def _init_bm25_retriever(self):
+        """初始化BM25检索器"""
+        if self.all_documents:
+            self.bm25_retriever = BM25Retriever.from_documents(self.all_documents)
+            self.bm25_retriever.k = 5  # BM25返回数量
+            print(f"BM25检索器已初始化，文档数: {len(self.all_documents)}")
+    
     def search(self, query, k=3):
-        """搜索相关文档"""
+        """搜索相关文档（原始向量检索）"""
         results = self.vectorstore.similarity_search(query, k=k)
+        return results
+    
+    def hybrid_search(self, query, k=3, use_rerank=True):
+        """
+        多路召回 + 重排序
+        1. 向量检索（语义相似）
+        2. BM25检索（关键词匹配）
+        3. 融合结果
+        4. 重排序优化
+        """
+        # 向量检索
+        vector_results = self.vectorstore.similarity_search(query, k=k*2)
+        
+        # BM25检索（如果可用）
+        bm25_results = []
+        if self.bm25_retriever:
+            try:
+                bm25_results = self.bm25_retriever.invoke(query)[:k*2]
+            except Exception as e:
+                print(f"BM25检索失败: {e}")
+        
+        # 融合结果（去重）
+        seen_contents = set()
+        merged_results = []
+        
+        for doc in vector_results + bm25_results:
+            content_hash = hash(doc.page_content[:100])  # 用前100字符去重
+            if content_hash not in seen_contents:
+                seen_contents.add(content_hash)
+                merged_results.append(doc)
+        
+        print(f"多路召回: 向量{len(vector_results)}条 + BM25{len(bm25_results)}条 → 融合{len(merged_results)}条")
+        
+        # 重排序（如果可用）
+        if use_rerank and self.reranker and merged_results:
+            try:
+                # 构建query-doc对
+                pairs = [[query, doc.page_content] for doc in merged_results]
+                scores = self.reranker.predict(pairs)
+                
+                # 按分数排序
+                scored_results = list(zip(merged_results, scores))
+                scored_results.sort(key=lambda x: x[1], reverse=True)
+                
+                reranked = [doc for doc, score in scored_results[:k]]
+                print(f"重排序完成，返回top{k}")
+                return reranked
+            except Exception as e:
+                print(f"重排序失败: {e}")
+        
+        return merged_results[:k]
+    
+    def search_with_scores(self, query, k=3):
+        """搜索并返回相似度分数"""
+        results = self.vectorstore.similarity_search_with_score(query, k=k)
         return results
 
 # 使用示例

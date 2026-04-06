@@ -1,9 +1,9 @@
 {
   "metadata": {
     "version": "5.0",
-    "description": "基于 CMRC2018 的正确评估数据集",
+    "description": "CMRC2018 100鏉″畬鏁磋瘎浼版暟鎹泦",
     "source": "CMRC2018 (哈工大)",
-    "total_cases": 50,
+    "total_cases": 100,
     "note": "context 已加载到知识库，用 question 测试检索"
   },
   "rag_tests": [
@@ -14,7 +14,7 @@
       "relevant_docs": [
         "doc_000.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_001",
@@ -23,7 +23,7 @@
       "relevant_docs": [
         "doc_001.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_002",
@@ -32,7 +32,7 @@
       "relevant_docs": [
         "doc_002.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_003",
@@ -41,7 +41,7 @@
       "relevant_docs": [
         "doc_003.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_004",
@@ -50,7 +50,7 @@
       "relevant_docs": [
         "doc_004.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_005",
@@ -59,7 +59,7 @@
       "relevant_docs": [
         "doc_005.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_006",
@@ -68,7 +68,7 @@
       "relevant_docs": [
         "doc_006.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_007",
@@ -77,7 +77,7 @@
       "relevant_docs": [
         "doc_007.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_008",
@@ -86,7 +86,7 @@
       "relevant_docs": [
         "doc_008.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_009",
@@ -95,7 +95,7 @@
       "relevant_docs": [
         "doc_009.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_010",
@@ -104,7 +104,7 @@
       "relevant_docs": [
         "doc_010.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_011",
@@ -113,7 +113,7 @@
       "relevant_docs": [
         "doc_011.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_012",
@@ -122,7 +122,7 @@
       "relevant_docs": [
         "doc_012.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_013",
@@ -131,7 +131,7 @@
       "relevant_docs": [
         "doc_013.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_014",
@@ -140,7 +140,7 @@
       "relevant_docs": [
         "doc_014.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_015",
@@ -149,7 +149,7 @@
       "relevant_docs": [
         "doc_015.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_016",
@@ -158,7 +158,7 @@
       "relevant_docs": [
         "doc_016.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_017",
@@ -167,7 +167,7 @@
       "relevant_docs": [
         "doc_017.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_018",
@@ -176,7 +176,7 @@
       "relevant_docs": [
         "doc_018.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_019",
@@ -185,7 +185,7 @@
       "relevant_docs": [
         "doc_019.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_020",
@@ -194,7 +194,7 @@
       "relevant_docs": [
         "doc_020.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_021",
@@ -203,7 +203,7 @@
       "relevant_docs": [
         "doc_021.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_022",
@@ -212,7 +212,7 @@
       "relevant_docs": [
         "doc_022.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_023",
@@ -221,7 +221,7 @@
       "relevant_docs": [
         "doc_023.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_024",
@@ -230,7 +230,7 @@
       "relevant_docs": [
         "doc_024.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_025",
@@ -239,7 +239,7 @@
       "relevant_docs": [
         "doc_025.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_026",
@@ -248,7 +248,7 @@
       "relevant_docs": [
         "doc_026.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_027",
@@ -257,7 +257,7 @@
       "relevant_docs": [
         "doc_027.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_028",
@@ -266,7 +266,7 @@
       "relevant_docs": [
         "doc_028.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_029",
@@ -275,7 +275,7 @@
       "relevant_docs": [
         "doc_029.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_030",
@@ -284,7 +284,7 @@
       "relevant_docs": [
         "doc_030.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_031",
@@ -293,7 +293,7 @@
       "relevant_docs": [
         "doc_031.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_032",
@@ -302,7 +302,7 @@
       "relevant_docs": [
         "doc_032.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_033",
@@ -311,7 +311,7 @@
       "relevant_docs": [
         "doc_033.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_034",
@@ -320,7 +320,7 @@
       "relevant_docs": [
         "doc_034.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_035",
@@ -329,7 +329,7 @@
       "relevant_docs": [
         "doc_035.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_036",
@@ -338,7 +338,7 @@
       "relevant_docs": [
         "doc_036.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_037",
@@ -347,7 +347,7 @@
       "relevant_docs": [
         "doc_037.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_038",
@@ -356,7 +356,7 @@
       "relevant_docs": [
         "doc_038.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_039",
@@ -365,7 +365,7 @@
       "relevant_docs": [
         "doc_039.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_040",
@@ -374,7 +374,7 @@
       "relevant_docs": [
         "doc_040.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_041",
@@ -383,7 +383,7 @@
       "relevant_docs": [
         "doc_041.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_042",
@@ -392,7 +392,7 @@
       "relevant_docs": [
         "doc_042.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_043",
@@ -401,7 +401,7 @@
       "relevant_docs": [
         "doc_043.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_044",
@@ -410,7 +410,7 @@
       "relevant_docs": [
         "doc_044.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_045",
@@ -419,7 +419,7 @@
       "relevant_docs": [
         "doc_045.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_046",
@@ -428,7 +428,7 @@
       "relevant_docs": [
         "doc_046.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_047",
@@ -437,7 +437,7 @@
       "relevant_docs": [
         "doc_047.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_048",
@@ -446,7 +446,7 @@
       "relevant_docs": [
         "doc_048.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
     },
     {
       "id": "eval_049",
@@ -455,7 +455,457 @@
       "relevant_docs": [
         "doc_049.md"
       ],
-      "category": "公开数据集"
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_050",
+      "question": "硼砂的外观是什么样的？",
+      "expected_answer": "含有无色晶体的白色粉末，易溶于水",
+      "relevant_docs": [
+        "doc_050.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_051",
+      "question": "钟建民取得了大会的什么奖？",
+      "expected_answer": "勇创高峰奖",
+      "relevant_docs": [
+        "doc_051.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_052",
+      "question": "曾伟明曾就读位于深井的哪所小学？",
+      "expected_answer": "深井的灵光小学。",
+      "relevant_docs": [
+        "doc_052.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_053",
+      "question": "杨树浦水厂是什么造型的？",
+      "expected_answer": "英国古典城堡式造型",
+      "relevant_docs": [
+        "doc_053.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_054",
+      "question": "马岛灵猫又名什么？",
+      "expected_answer": "马尔加什灵猫、马岛麝猫或马岛缟狸",
+      "relevant_docs": [
+        "doc_054.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_055",
+      "question": "纽波特在什么地方？",
+      "expected_answer": "美国罗得岛州南部",
+      "relevant_docs": [
+        "doc_055.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_056",
+      "question": "赤膀鸭的俗称是什么？",
+      "expected_answer": "漈凫",
+      "relevant_docs": [
+        "doc_056.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_057",
+      "question": "莱索托哪一年独立？",
+      "expected_answer": "1966年",
+      "relevant_docs": [
+        "doc_057.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_058",
+      "question": "《唐文粹》是由谁编著的？",
+      "expected_answer": "姚铉",
+      "relevant_docs": [
+        "doc_058.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_059",
+      "question": "曾伟明当亚洲电视男艺员时的代表作是什么？",
+      "expected_answer": "《再见艳阳天》",
+      "relevant_docs": [
+        "doc_059.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_060",
+      "question": "徐凤月是马来西亚第多少届霹雳九洞州议员？",
+      "expected_answer": "第12届",
+      "relevant_docs": [
+        "doc_060.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_061",
+      "question": "李婉华毕业于什么学校？",
+      "expected_answer": "香港演艺学院",
+      "relevant_docs": [
+        "doc_061.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_062",
+      "question": "约瑟夫·洛克出生在什么地方？",
+      "expected_answer": "奥地利维也纳",
+      "relevant_docs": [
+        "doc_062.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_063",
+      "question": "唐朝垂拱四年，金华县被称作什么？",
+      "expected_answer": "金山县",
+      "relevant_docs": [
+        "doc_063.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_064",
+      "question": "王欣逸在2016年被地检署以什么罪名提起了公诉？",
+      "expected_answer": "杀人未遂罪",
+      "relevant_docs": [
+        "doc_064.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_065",
+      "question": "日本狼分布在哪里？",
+      "expected_answer": "本州、四国及九州。",
+      "relevant_docs": [
+        "doc_065.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_066",
+      "question": "矢井田瞳的职业是什么？",
+      "expected_answer": "歌手",
+      "relevant_docs": [
+        "doc_066.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_067",
+      "question": "1841年，谁因英国不满而被召回伦敦？",
+      "expected_answer": "查理·义律",
+      "relevant_docs": [
+        "doc_067.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_068",
+      "question": "拉里·伯德条款规定合约签订的最长年限是几年？",
+      "expected_answer": "六年（2011新版劳资协定改为5年）",
+      "relevant_docs": [
+        "doc_068.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_069",
+      "question": "王金璐是什么项目的继承人？",
+      "expected_answer": "国家级非物质文化遗产京剧项目",
+      "relevant_docs": [
+        "doc_069.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_070",
+      "question": "基隆颜家为什么把三峡客运更名为海山客运？",
+      "expected_answer": "因三峡客运所经营之路线大部分以1950年县辖区建制废除前的台北县海山区为主",
+      "relevant_docs": [
+        "doc_070.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_071",
+      "question": "棕榈蝮主要分布在什么地方？",
+      "expected_answer": "墨西哥、中美洲以至哥伦比亚、秘鲁等地区",
+      "relevant_docs": [
+        "doc_071.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_072",
+      "question": "美洲似银汉鱼整体呈什么形状？",
+      "expected_answer": "长梭型",
+      "relevant_docs": [
+        "doc_072.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_073",
+      "question": "美国特勤局成立于什么时候？",
+      "expected_answer": "1865年",
+      "relevant_docs": [
+        "doc_073.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_074",
+      "question": "进步号和联盟号都采取了怎样的结构？",
+      "expected_answer": "三舱式结构",
+      "relevant_docs": [
+        "doc_074.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_075",
+      "question": "索靖是哪里人？",
+      "expected_answer": "晋朝敦煌人",
+      "relevant_docs": [
+        "doc_075.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_076",
+      "question": "武藏浦和站可分为几个部分？",
+      "expected_answer": "分为两个部份。",
+      "relevant_docs": [
+        "doc_076.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_077",
+      "question": "张静美21岁时以哪部作品正式出道？",
+      "expected_answer": "〈灵香园传奇〉",
+      "relevant_docs": [
+        "doc_077.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_078",
+      "question": "赛斯纳170是由哪个公司研制？",
+      "expected_answer": "塞斯纳公司",
+      "relevant_docs": [
+        "doc_078.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_079",
+      "question": "牠们比相关的哪一科分布更为广泛及成功？",
+      "expected_answer": "牛鬣兽科",
+      "relevant_docs": [
+        "doc_079.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_080",
+      "question": "冠饰角龙类与什么龙组成新角龙类？",
+      "expected_answer": "阎王角龙、黎明角龙、古角龙、辽宁角龙等物种",
+      "relevant_docs": [
+        "doc_080.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_081",
+      "question": "食肉牛龙亚科是什么科的一个亚科？",
+      "expected_answer": "阿贝力龙科",
+      "relevant_docs": [
+        "doc_081.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_082",
+      "question": "虹彩吸蜜鹦鹉母鸟需要多久才成熟？",
+      "expected_answer": "两年",
+      "relevant_docs": [
+        "doc_082.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_083",
+      "question": "龙山国小最先是什么时候创校的？",
+      "expected_answer": "1919年4月1日",
+      "relevant_docs": [
+        "doc_083.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_084",
+      "question": "旷野鹰豪乐团第四张专辑《伊瑟利亚传奇》在哪一年发行？",
+      "expected_answer": "2008年",
+      "relevant_docs": [
+        "doc_084.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_085",
+      "question": "中国第一个建于永久冻土带的机场是什么？",
+      "expected_answer": "漠河机场",
+      "relevant_docs": [
+        "doc_085.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_086",
+      "question": "塞雷茨的继承权在哪一年被宣布终止？",
+      "expected_answer": "1951年",
+      "relevant_docs": [
+        "doc_086.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_087",
+      "question": "沈福儒前五轮带队取得1平4负的糟糕成绩后教练职位被谁取代？",
+      "expected_answer": "李勇",
+      "relevant_docs": [
+        "doc_087.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_088",
+      "question": "禅那这个词语源自于哪里？",
+      "expected_answer": "婆罗门教《梨俱吠陀》",
+      "relevant_docs": [
+        "doc_088.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_089",
+      "question": "胸斑眶锯雀鲷的生活习性是什么样的？",
+      "expected_answer": "本鱼栖息在沿岸水流较缓的岩礁区，具领域性，属于藻食性鱼类。",
+      "relevant_docs": [
+        "doc_089.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_090",
+      "question": "大鳞大眼鲷的俗名是什么？",
+      "expected_answer": "红目鲢、红目眶",
+      "relevant_docs": [
+        "doc_090.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_091",
+      "question": "香港冠军暨遮打杯的命名是为了纪念谁？",
+      "expected_answer": "遮打爵士",
+      "relevant_docs": [
+        "doc_091.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_092",
+      "question": "男方的队伍名是什么？",
+      "expected_answer": "九头蛇",
+      "relevant_docs": [
+        "doc_092.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_093",
+      "question": "刘德一自编自演了哪些电视剧？",
+      "expected_answer": "《凌汤圆》、《傻儿师长》等",
+      "relevant_docs": [
+        "doc_093.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_094",
+      "question": "王处直的字是什么？",
+      "expected_answer": "允明",
+      "relevant_docs": [
+        "doc_094.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_095",
+      "question": "《温哥华太阳报》自哪一年起赞助温哥华太阳长跑？",
+      "expected_answer": "1985年",
+      "relevant_docs": [
+        "doc_095.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_096",
+      "question": "司马繇为什么会招致司马亮的猜疑？",
+      "expected_answer": "司马繇专权，一天之内恣意赏罚达三百余人",
+      "relevant_docs": [
+        "doc_096.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_097",
+      "question": "圣体堂区成立于哪年？",
+      "expected_answer": "1905年",
+      "relevant_docs": [
+        "doc_097.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_098",
+      "question": "在家人在佛教道教有什么称谓？",
+      "expected_answer": "佛教的僧侣和尼姑等，或道教全真派的道士和道姑",
+      "relevant_docs": [
+        "doc_098.md"
+      ],
+      "category": "CMRC2018"
+    },
+    {
+      "id": "eval_099",
+      "question": "相关协定国保证工作假期签证的意图是什么？",
+      "expected_answer": "用来鼓励双方国家的公民进行旅行和文化交流",
+      "relevant_docs": [
+        "doc_099.md"
+      ],
+      "category": "CMRC2018"
     }
   ],
   "agent_tests": []
