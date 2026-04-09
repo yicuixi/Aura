@@ -160,6 +160,9 @@ self_introduction.txt
 ehthumbs.db
 Thumbs.db
 
+# Trace 日志（可观测性产生的本地 trace）
+traces/
+
 # 临时文件
 *.tmp
 *.temp

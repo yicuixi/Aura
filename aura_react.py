@@ -19,6 +19,7 @@ from langchain_core.prompts import PromptTemplate
 
 from rag import RAGSystem
 from memory import LongTermMemory
+from tracing import Tracer
 import tools as tool_functions
 
 # ── Adaptive RAG 路由 ────────────────────────────────────
@@ -124,6 +125,9 @@ class AuraReActAgent:
             enable_reranker=enable_reranker,
         )
         
+        # 可观测性
+        self.tracer = Tracer()
+
         # Adaptive RAG 路由器
         self.router = QueryRouter(self.llm)
 
@@ -245,33 +249,39 @@ class AuraReActAgent:
     
     def process_query(self, query: str) -> str:
         """处理查询"""
+        trace = self.tracer.start_trace(query)
         try:
+            route = self.router.route(query)
+            self.tracer.add_event(trace, "route", {"route": route})
+
             result = self.agent_executor.invoke({"input": query})
             response = result.get("output", "抱歉，我无法回答这个问题")
             
-            # 保存到长期记忆
             self.long_term_memory.add_conversation(query, response)
-            
-            # 保存最后一次调用的中间步骤（用于评估）
             self._last_intermediate_steps = result.get("intermediate_steps", [])
-            
+
+            tools_used = self.get_last_tools_used()
+            self.tracer.end_trace(trace, response, route=route, tools_used=tools_used)
+
             return response
         except Exception as e:
             logger.error(f"处理出错: {e}")
             self._last_intermediate_steps = []
+            self.tracer.end_trace(trace, str(e), route="ERROR")
             return f"抱歉，出错了: {e}"
     
     def process_query_with_info(self, query: str) -> dict:
-        """处理查询并返回详细信息（含路由决策，用于评估）"""
+        """处理查询并返回详细信息（含路由决策 + tracing，用于评估）"""
+        trace = self.tracer.start_trace(query)
         try:
             route = self.router.route(query)
+            self.tracer.add_event(trace, "route", {"route": route})
             logger.info(f"Adaptive RAG route: {query[:40]}... → {route}")
 
             result = self.agent_executor.invoke({"input": query})
             response = result.get("output", "抱歉，我无法回答这个问题")
             intermediate_steps = result.get("intermediate_steps", [])
             
-            # 提取使用的工具
             tools_used = []
             tool_outputs = []
             for step in intermediate_steps:
@@ -281,18 +291,23 @@ class AuraReActAgent:
                     tools_used.append(action.tool)
                     tool_outputs.append(str(output)[:200])
             
-            # 保存到长期记忆
             self.long_term_memory.add_conversation(query, response)
-            
+
+            self.tracer.add_event(trace, "agent_done", {"tools": tools_used})
+            finished = self.tracer.end_trace(trace, response, route=route, tools_used=tools_used)
+
             return {
                 "response": response,
                 "route": route,
                 "tools_used": tools_used,
                 "tool_outputs": tool_outputs,
                 "intermediate_steps": intermediate_steps,
+                "trace_id": finished["trace_id"],
+                "latency_ms": finished["latency_ms"],
             }
         except Exception as e:
             logger.error(f"处理出错: {e}")
+            self.tracer.end_trace(trace, str(e), route="ERROR")
             return {
                 "response": f"抱歉，出错了: {e}",
                 "route": "ERROR",
