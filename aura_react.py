@@ -1,12 +1,11 @@
 """
 Aura AI - 完整 ReAct Agent 版本
-测试 qwen2.5:7b 能否正确输出 ReAct 格式
+支持 Ollama 本地推理 和 OpenAI 兼容 API（DeepSeek 等）两种后端
 """
 
 import os
 import logging
 
-# 兼容 langchain 0.3.x 和 1.x
 try:
     from langchain_classic.agents import AgentExecutor, create_react_agent
     from langchain_classic.memory import ConversationBufferWindowMemory
@@ -21,6 +20,28 @@ from langchain_core.prompts import PromptTemplate
 from rag import RAGSystem
 from memory import LongTermMemory
 import tools as tool_functions
+
+
+def _build_llm(model_name: str, api_key: str | None = None, base_url: str | None = None):
+    """
+    构建 LLM 实例。
+    - 有 api_key → 走 OpenAI 兼容 API（DeepSeek / 智谱 等）
+    - 否则 → 走本地 Ollama
+    """
+    if api_key:
+        from langchain_openai import ChatOpenAI
+        return ChatOpenAI(
+            model=model_name,
+            openai_api_key=api_key,
+            openai_api_base=base_url or "https://api.deepseek.com",
+            temperature=0.3,
+            max_tokens=1024,
+        )
+    return Ollama(
+        model=model_name,
+        base_url="http://localhost:11434",
+        temperature=0,
+    )
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("AuraReAct")
@@ -55,27 +76,23 @@ Question: {input}
 class AuraReActAgent:
     """完整 ReAct Agent 版本"""
     
-    def __init__(self, model_name="qwen2.5:7b"):
+    def __init__(self, model_name="qwen2.5:7b", enable_reranker=True,
+                 api_key: str | None = None, base_url: str | None = None):
         logger.info("初始化 ReAct Agent...")
         
-        # LLM
-        self.llm = Ollama(
-            model=model_name,
-            base_url="http://localhost:11434",
-            temperature=0.3  # 降低温度，让输出更稳定
-            # 注意：不要设置 stop，ReAct Agent 会自己管理
-        )
+        self.llm = _build_llm(model_name, api_key=api_key, base_url=base_url)
         
-        # 记忆
         self.long_term_memory = LongTermMemory()
         self.conversation_memory = ConversationBufferWindowMemory(
             k=5,
             memory_key="chat_history",
-            return_messages=False  # 返回字符串而不是消息对象
+            return_messages=False,
         )
         
-        # RAG
-        self.rag_system = RAGSystem(persist_directory="db")
+        self.rag_system = RAGSystem(
+            persist_directory="db",
+            enable_reranker=enable_reranker,
+        )
         
         # 工具
         self.tools = self._create_tools()
@@ -92,11 +109,11 @@ class AuraReActAgent:
             agent=self.agent,
             tools=self.tools,
             memory=self.conversation_memory,
-            verbose=True,  # 显示详细过程
-            handle_parsing_errors=True,  # 处理解析错误
-            max_iterations=5,  # 增加迭代次数
-            early_stopping_method="generate",  # 达到限制时让模型自己生成最终答案
-            return_intermediate_steps=True  # 返回中间步骤，用于评估
+            verbose=True,
+            handle_parsing_errors=True,
+            max_iterations=5,
+            early_stopping_method="force",
+            return_intermediate_steps=True,
         )
         
         logger.info("ReAct Agent 初始化完成")

@@ -239,6 +239,74 @@ ollama pull qwen3:4b
 2. 检查文件格式是否支持
 3. 确保文件编码为UTF-8
 
+## 📐 评测框架（Evaluation Framework）
+
+Aura 内置了一套完整的 Agent / RAG 自动化评测体系，覆盖**检索质量**、**任务完成率**、**能力维度分析**和**多模型横向对比**四个层次。
+
+### 评测指标体系
+
+| 层次 | 指标 | 说明 |
+|------|------|------|
+| RAG检索 | Hit Rate@K | Top-K 中包含相关文档的查询比例 |
+| RAG检索 | MRR | Mean Reciprocal Rank，越接近1越好 |
+| RAG检索 | Faithfulness / Relevance | LLM-as-Judge 评估生成质量 |
+| Agent | 工具调用准确率 | 正确判断是否使用工具及选对工具 |
+| Agent | 任务成功率 | 回答包含期望关键词的比例 |
+| 能力维度 | 逻辑推理 / 知识检索 / 工具调用 / 多轮对话 / 指令遵循 / 安全拒绝 | 6维细粒度打分 |
+| 横向对比 | 综合得分排名 | 同一测试集跨模型对比，量化能力差距 |
+
+### 快速运行评测
+
+```bash
+# 运行所有评测（RAG + Agent + 能力维度）
+python run_evaluation.py --save
+
+# 只评测 Agent（含能力维度分析）
+python run_evaluation.py --agent --save
+
+# 多模型横向对比（量化行业能力水平）
+python run_evaluation.py --compare qwen2.5:7b,qwen3:4b,llama3:8b --save
+
+# 使用 DeepSeek 作为外部 Judge（替代本地模型自评，结果更客观）
+python run_evaluation.py --llm-eval --deepseek-judge YOUR_API_KEY --save
+
+# 快速冒烟（每类只跑3条用例）
+python run_evaluation.py --quick
+```
+
+### 测试集结构
+
+在 `evaluation/test_dataset.json` 的每条用例中，通过 `dimension` 字段指定能力维度：
+
+```json
+{
+  "question": "帮我分析这段代码的时间复杂度",
+  "expected_tool": "search_knowledge",
+  "expected_contains": ["O(n)"],
+  "dimension": "reasoning"
+}
+```
+
+支持的维度值：`reasoning`（逻辑推理）、`knowledge`（知识检索）、`tool_use`（工具调用）、`multi_turn`（多轮对话）、`instruction`（指令遵循）、`safety`（安全拒绝）
+
+### 评测报告示例
+
+```
+╔══════════════════════════════════════════════════════════╗
+║                    Agent评估摘要                          ║
+╠══════════════════════════════════════════════════════════╣
+║  工具调用准确率:  85.71%                                  ║
+║  任务成功率:      78.57%                                  ║
+║  平均响应时间:    3240ms                                  ║
+║  通过/总数:         11/14                                 ║
+╚══════════════════════════════════════════════════════════╝
+
+能力维度得分:
+   • 工具调用:   90.00% [█████████░]  (9/10)
+   • 知识检索:   80.00% [████████░░]  (4/5)
+   • 逻辑推理:   66.67% [██████░░░░]  (2/3)
+```
+
 ## 🚀 高级功能
 
 ### 1. 自定义工具

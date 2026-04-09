@@ -15,11 +15,19 @@ import json
 import argparse
 from datetime import datetime
 
+# Windows PowerShell 默认 GBK，强制 UTF-8 避免 emoji 报错
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from aura_react import AuraReActAgent
 from evaluation.rag_eval import RAGEvaluator
-from evaluation.agent_eval import AgentEvaluator
+from evaluation.agent_eval import AgentEvaluator, CapabilityAnalyzer, ModelComparator
 
 
 class DeepSeekJudge:
@@ -109,31 +117,68 @@ def run_rag_evaluation(agent: AuraReActAgent, test_cases: list, use_llm: bool = 
 
 
 def run_agent_evaluation(agent: AuraReActAgent, test_cases: list) -> dict:
-    """运行Agent评估"""
+    """运行Agent评估（含能力维度分析）"""
     print("\n" + "=" * 60)
-    print("🤖 Agent评估")
+    print("Agent评估")
     print("=" * 60)
-    
-    # 创建评估器
+
     agent_evaluator = AgentEvaluator(agent)
-    
-    # 运行评估
-    print(f"\n⏳ 正在评估 {len(test_cases)} 个测试用例...")
+    capability = CapabilityAnalyzer()
+
+    print(f"\n正在评估 {len(test_cases)} 个测试用例...")
     results = agent_evaluator.evaluate(test_cases)
-    
-    # 打印摘要
+
+    # 将结果喂入能力维度分析器
+    for case, result in zip(test_cases, agent_evaluator.results.test_results):
+        capability.feed(case, result)
+
     print(agent_evaluator.generate_summary())
-    
-    # 详细统计
-    print("\n🔧 工具使用统计:")
+
+    print("\n工具使用统计:")
     for tool, count in agent_evaluator.results.tool_usage_stats.items():
         tool_name = tool if tool != "none" else "无工具"
         print(f"   • {tool_name}: {count}次")
-    
+
+    print("\n能力维度得分:")
+    for dim, data in capability.to_dict().items():
+        bar = "█" * int(data["score"] * 10) + "░" * (10 - int(data["score"] * 10))
+        print(f"   • {data['display_name']}: {data['score']:.2%} [{bar}]  ({data['passed']}/{data['total']})")
+
+    dim_report = capability.generate_report()
+    agent_report = agent_evaluator.generate_report() + "\n\n" + dim_report
+
     return {
         "results": results,
         "full_results": agent_evaluator.to_dict(),
-        "report": agent_evaluator.generate_report()
+        "report": agent_report,
+        "capability": capability.to_dict(),
+    }
+
+
+def run_model_comparison(model_names: list, test_cases: list,
+                         api_key: str = None, api_base: str = None) -> dict:
+    """多模型横向对比评估"""
+    print("\n" + "=" * 60)
+    print("多模型横向对比评估")
+    print(f"模型列表: {', '.join(model_names)}")
+    print("=" * 60)
+
+    def agent_factory(model_name: str) -> AuraReActAgent:
+        return AuraReActAgent(
+            model_name=model_name,
+            enable_reranker=False,
+            api_key=api_key,
+            base_url=api_base,
+        )
+
+    comparator = ModelComparator(agent_factory, test_cases)
+    comparator.run(model_names)
+    report = comparator.generate_report()
+
+    print("\n" + report)
+    return {
+        "results": comparator.to_dict(),
+        "report": report,
     }
 
 
@@ -199,9 +244,50 @@ def main():
     parser.add_argument("--llm-eval", action="store_true", help="使用LLM评估生成质量")
     parser.add_argument("--model", type=str, default="qwen2.5:7b", help="使用的模型名称")
     parser.add_argument("--deepseek-judge", type=str, default=None, help="DeepSeek API key, 用DeepSeek当Judge替代本地模型自评")
-    
+    parser.add_argument(
+        "--compare",
+        type=str,
+        default=None,
+        metavar="MODEL1,MODEL2,...",
+        help="多模型横向对比，逗号分隔模型名称，例如: qwen2.5:7b,qwen3:4b,llama3:8b",
+    )
+    parser.add_argument(
+        "--api",
+        type=str,
+        default=None,
+        metavar="API_KEY",
+        help="使用 OpenAI 兼容 API（如 DeepSeek）作为 Agent 后端，不走本地 Ollama",
+    )
+    parser.add_argument(
+        "--api-base",
+        type=str,
+        default="https://api.deepseek.com",
+        help="API base URL（默认 DeepSeek）",
+    )
+
     args = parser.parse_args()
     
+    # --compare 模式：多模型横向对比，优先执行
+    if args.compare:
+        model_names = [m.strip() for m in args.compare.split(",") if m.strip()]
+        try:
+            dataset = load_test_dataset()
+            test_cases = dataset.get("agent_tests", [])
+            if args.quick:
+                test_cases = test_cases[:3]
+            compare_results = run_model_comparison(
+                model_names, test_cases,
+                api_key=args.api, api_base=args.api_base,
+            )
+            if args.save:
+                save_report("", compare_results.get("report", ""))
+        except FileNotFoundError:
+            print("找不到测试数据集文件: evaluation/test_dataset.json")
+        print("\n" + "=" * 60)
+        print("多模型对比完成!")
+        print("=" * 60)
+        return
+
     # 如果没有指定评估类型，则运行所有评估
     run_rag = args.rag or (not args.rag and not args.agent)
     run_agent = args.agent or (not args.rag and not args.agent)
@@ -228,9 +314,15 @@ def main():
         dataset["agent_tests"] = dataset.get("agent_tests", [])[:3]
     
     # 初始化Agent
-    print(f"\n🔧 初始化Aura Agent (模型: {args.model})...")
+    backend = f"API ({args.api_base})" if args.api else "Ollama (本地)"
+    print(f"\n🔧 初始化Aura Agent (模型: {args.model}, 后端: {backend})...")
     try:
-        agent = AuraReActAgent(model_name=args.model)
+        agent = AuraReActAgent(
+            model_name=args.model,
+            enable_reranker=False,
+            api_key=args.api,
+            base_url=args.api_base,
+        )
         print("   ✅ Agent初始化成功")
     except Exception as e:
         print(f"   ❌ Agent初始化失败: {e}")

@@ -30,7 +30,7 @@ except ImportError:
     print("提示: 安装 sentence-transformers 可启用重排序功能")
 
 class RAGSystem:
-    def __init__(self, persist_directory="db", use_m3e=True):
+    def __init__(self, persist_directory="db", use_m3e=True, enable_reranker=True):
         # 初始化嵌入模型
         if use_m3e:
             # 使用 m3e-base（中文语义匹配专用，效果最好）
@@ -66,11 +66,10 @@ class RAGSystem:
         self.bm25_retriever = None
         self.all_documents = []  # 保存文档用于BM25
         
-        # 初始化重排序模型
+        # 初始化重排序模型（可通过 enable_reranker=False 关闭以节省显存）
         self.reranker = None
-        if RERANKER_AVAILABLE:
+        if enable_reranker and RERANKER_AVAILABLE:
             try:
-                # 使用轻量级中文重排序模型
                 self.reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2', max_length=512)
                 print("已加载重排序模型")
             except Exception as e:
