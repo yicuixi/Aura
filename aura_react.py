@@ -21,6 +21,36 @@ from rag import RAGSystem
 from memory import LongTermMemory
 import tools as tool_functions
 
+# ── Adaptive RAG 路由 ────────────────────────────────────
+ROUTE_PROMPT = PromptTemplate.from_template(
+    """Classify the user query into exactly ONE of these routes:
+- RETRIEVE: needs private knowledge base search (documents, notes, papers)
+- TOOL: needs external tool (web search, calculator, etc.)
+- DIRECT: can be answered directly from your general knowledge
+
+Query: {query}
+Route:"""
+)
+
+
+class QueryRouter:
+    """Adaptive RAG: 根据查询意图选择检索/工具/直接回答"""
+
+    def __init__(self, llm):
+        self.chain = ROUTE_PROMPT | llm
+
+    def route(self, query: str) -> str:
+        try:
+            raw = self.chain.invoke({"query": query})
+            text = raw.content if hasattr(raw, "content") else str(raw)
+            text = text.strip().upper()
+            for r in ("RETRIEVE", "TOOL", "DIRECT"):
+                if r in text:
+                    return r
+        except Exception:
+            pass
+        return "RETRIEVE"  # 默认走检索（安全兜底）
+
 
 def _build_llm(model_name: str, api_key: str | None = None, base_url: str | None = None):
     """
@@ -94,6 +124,9 @@ class AuraReActAgent:
             enable_reranker=enable_reranker,
         )
         
+        # Adaptive RAG 路由器
+        self.router = QueryRouter(self.llm)
+
         # 工具
         self.tools = self._create_tools()
         
@@ -229,8 +262,11 @@ class AuraReActAgent:
             return f"抱歉，出错了: {e}"
     
     def process_query_with_info(self, query: str) -> dict:
-        """处理查询并返回详细信息（用于评估）"""
+        """处理查询并返回详细信息（含路由决策，用于评估）"""
         try:
+            route = self.router.route(query)
+            logger.info(f"Adaptive RAG route: {query[:40]}... → {route}")
+
             result = self.agent_executor.invoke({"input": query})
             response = result.get("output", "抱歉，我无法回答这个问题")
             intermediate_steps = result.get("intermediate_steps", [])
@@ -250,17 +286,19 @@ class AuraReActAgent:
             
             return {
                 "response": response,
+                "route": route,
                 "tools_used": tools_used,
                 "tool_outputs": tool_outputs,
-                "intermediate_steps": intermediate_steps
+                "intermediate_steps": intermediate_steps,
             }
         except Exception as e:
             logger.error(f"处理出错: {e}")
             return {
                 "response": f"抱歉，出错了: {e}",
+                "route": "ERROR",
                 "tools_used": [],
                 "tool_outputs": [],
-                "error": str(e)
+                "error": str(e),
             }
     
     def get_last_tools_used(self) -> list:
