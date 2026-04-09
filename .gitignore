@@ -239,3 +239,10 @@ resume_version_*.txt
 # Claude / Playwright 本地配置
 .claude/
 .playwright-mcp/
+
+# 面试笔记与个人文档
+*_interview_*.md
+*_prep.md
+job_tracker.md
+声网*.md
+芷间*.md
