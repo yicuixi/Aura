@@ -188,7 +188,7 @@ class RAGSystem:
         merged_results = []
         
         for doc in vector_results + bm25_results:
-            content_hash = hash(doc.page_content[:100])  # 用前100字符去重
+            content_hash = hash(doc.page_content[:100])
             if content_hash not in seen_contents:
                 seen_contents.add(content_hash)
                 merged_results.append(doc)
@@ -198,11 +198,9 @@ class RAGSystem:
         # 重排序（如果可用）
         if use_rerank and self.reranker and merged_results:
             try:
-                # 构建query-doc对
                 pairs = [[query, doc.page_content] for doc in merged_results]
                 scores = self.reranker.predict(pairs)
                 
-                # 按分数排序
                 scored_results = list(zip(merged_results, scores))
                 scored_results.sort(key=lambda x: x[1], reverse=True)
                 
@@ -213,6 +211,25 @@ class RAGSystem:
                 print(f"重排序失败: {e}")
         
         return merged_results[:k]
+
+    def hybrid_search_with_sources(self, query, k=3, use_rerank=True):
+        """
+        带来源溯源的混合检索（Citation）。
+        返回 list[dict]，每个 dict 含 content / source / score（可选）。
+        """
+        results = self.hybrid_search(query, k=k, use_rerank=use_rerank)
+        cited = []
+        for i, doc in enumerate(results):
+            source = doc.metadata.get("source", "unknown")
+            # 取文件名作为简短引用
+            source_name = os.path.basename(source) if source != "unknown" else source
+            cited.append({
+                "index": i + 1,
+                "content": doc.page_content,
+                "source": source_name,
+                "full_path": source,
+            })
+        return cited
     
     def search_with_scores(self, query, k=3):
         """搜索并返回相似度分数"""

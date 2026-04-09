@@ -154,17 +154,22 @@ class AuraReActAgent:
         return base_tools
     
     def _search_knowledge(self, query: str) -> str:
-        """搜索知识库（多路召回+重排序）"""
+        """搜索知识库（多路召回 + 重排序 + Citation 溯源）"""
         try:
-            # 优先使用混合检索
-            results = self.rag_system.hybrid_search(query, k=3, use_rerank=True)
+            cited = self.rag_system.hybrid_search_with_sources(query, k=3, use_rerank=True)
         except AttributeError:
-            # 兼容旧版本
             results = self.rag_system.search(query, k=3)
-        
-        if results:
-            return "\n".join([doc.page_content[:200] for doc in results])
-        return "知识库中没有找到相关信息"
+            if results:
+                return "\n".join([doc.page_content[:200] for doc in results])
+            return "知识库中没有找到相关信息"
+
+        if not cited:
+            return "知识库中没有找到相关信息"
+
+        parts = []
+        for item in cited:
+            parts.append(f"[{item['index']}] {item['content'][:200]}\n    —— 来源: {item['source']}")
+        return "\n\n".join(parts)
     
     def _remember(self, fact: str) -> str:
         """记住信息"""
