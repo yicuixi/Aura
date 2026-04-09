@@ -8,12 +8,15 @@
 
 ## 🎯 核心特性
 
-- 🧠 **智能对话**: 基于Qwen3:4b模型的自然语言交互
-- 🔍 **知识检索**: RAG系统，可加载本地文档进行问答
+- 🧠 **智能对话**: 基于Qwen模型的自然语言交互，支持 Ollama 本地推理 / OpenAI 兼容 API 双后端
+- 🔍 **混合检索 + Citation 溯源**: 向量 + BM25 多路召回 → CrossEncoder 重排序，答案自动附带文档来源引用
+- 🧭 **Adaptive RAG 路由**: LLM 自动判断 RETRIEVE / TOOL / DIRECT 三路分流，避免无效检索
+- 🔒 **安全与隐私**: PII 检测脱敏、输入清洗、路径沙箱、Fernet 加密、审计日志、API Key 认证
+- 📊 **可观测性**: 本地 JSON 链路追踪（route → tools → latency），可选 LangSmith 集成
 - 💾 **长期记忆**: 记住用户偏好和对话历史
-- 🛠️ **工具调用**: 支持文件操作、网络搜索等功能
-- 🌐 **多种接口**: CLI命令行 + Web API两种使用方式
-- 🏠 **完全本地**: 基于Ollama部署，保护隐私安全
+- 🛠️ **工具调用**: ReAct Agent 框架，支持网络搜索、知识库检索等
+- 📐 **评测框架**: 6 维能力分析 + 多模型横向对比 + LLM-as-Judge
+- 🐳 **容器化部署**: Docker Compose 一键启动，FastAPI Web API
 
 ## 🚀 快速开始
 
@@ -57,18 +60,20 @@ uvicorn api:app --host 0.0.0.0 --port 5000
 
 ```
 Aura/
-├── aura_react.py              # ReAct Agent 主入口
+├── aura_react.py              # ReAct Agent 主入口（含 Adaptive RAG 路由）
 ├── api.py                     # FastAPI Web API
-├── rag.py                     # RAG知识检索系统
-├── memory.py                  # 记忆管理系统
+├── rag.py                     # RAG 检索系统（混合检索 + Citation 溯源）
+├── security.py                # 安全模块（PII 脱敏/加密/审计/沙箱）
+├── tracing.py                 # 可观测性（本地 trace + LangSmith）
+├── memory.py                  # 长期记忆管理
 ├── tools.py                   # 工具集成模块
-├── mcp_server.py              # MCP知识库服务
-├── requirements.txt           # Python依赖
-├── job_hunter/                # 自动求职模块
-├── evaluation/                # 评估框架
+├── mcp_server.py              # MCP 知识库服务
+├── requirements.txt           # Python 依赖
+├── evaluation/                # 评测框架（6 维能力分析 + 模型对比）
+├── reports/                   # 评测报告
 ├── data/                      # 知识库数据目录
-├── docker/                    # Docker配置
-└── reports/                   # 评估报告
+├── docker/                    # Docker 配置
+└── traces/                    # 链路追踪日志（gitignored）
 ```
 
 ## 🔧 使用方法
@@ -239,6 +244,40 @@ ollama pull qwen3:4b
 2. 检查文件格式是否支持
 3. 确保文件编码为UTF-8
 
+## 🔒 安全与隐私（Security & Privacy）
+
+`security.py` 提供 6 层防护机制，适用于医疗、金融等隐私敏感场景：
+
+| 层级 | 功能 | 实现 |
+|------|------|------|
+| PII 检测 | 识别手机号、身份证、邮箱、银行卡、IP 等 6 类敏感信息 | 正则匹配 → 定位 + 分类 |
+| PII 脱敏 | 自动将敏感信息替换为掩码（如 `138****1234`） | 按类型定制掩码策略 |
+| 输入清洗 | 拦截 XSS / 模板注入 / Python 沙箱逃逸 | 危险模式正则检测 |
+| 路径沙箱 | 文件操作限制在 `data/` `logs/` 白名单内 | `os.path` 规范化 + 前缀校验 |
+| 加密存储 | 用户隐私数据 Fernet 对称加密（PBKDF2 密钥派生） | `cryptography` 库 |
+| 审计日志 | 所有操作自动记录，日志内容二次脱敏 | 独立审计 logger |
+
+```python
+from security import detect_pii, mask_pii, sanitize_query, encrypt_text
+
+detect_pii("联系我 13812341234")
+# → [{'type': 'phone_cn', 'value': '13812341234', ...}]
+
+mask_pii("联系我 13812341234")
+# → "联系我 138****1234"
+```
+
+## 📊 可观测性（Observability）
+
+每次请求自动生成 JSON trace，记录完整链路：
+
+```
+query → route(RETRIEVE/TOOL/DIRECT) → tool_calls → response → latency_ms
+```
+
+- 本地模式：trace 写入 `traces/` 目录，支持 `get_recent_traces()` 查看最近请求
+- LangSmith 模式：设置 `LANGCHAIN_TRACING_V2=true` + `LANGCHAIN_API_KEY` 即可自动接入
+
 ## 📐 评测框架（Evaluation Framework）
 
 Aura 内置了一套完整的 Agent / RAG 自动化评测体系，覆盖**检索质量**、**任务完成率**、**能力维度分析**和**多模型横向对比**四个层次。
@@ -309,24 +348,37 @@ python run_evaluation.py --quick
 
 ## 🚀 高级功能
 
-### 1. 自定义工具
-可在 `tools.py` 中添加自定义工具函数
+### 1. Adaptive RAG 路由
+每次查询自动分类为 `RETRIEVE`（知识库检索）/ `TOOL`（外部工具）/ `DIRECT`（直接回答），减少不必要的检索开销。
 
-### 2. 记忆管理
+### 2. Citation 溯源
+RAG 返回的每条结果附带 `[1] ... —— 来源: filename.md` 格式的引用，方便用户验证信息来源。
+
+### 3. 自定义工具
+可在 `tools.py` 中添加自定义工具函数，Agent 会自动发现并使用。
+
+### 4. 记忆管理
 - 自动记住用户偏好
 - 保存对话历史
-- 支持手动添加记忆
-
-### 3. 多模态支持 (计划中)
-- 图像识别
-- 语音交互
-- 文档解析
+- 支持手动添加 / 查询记忆
 
 ## 📈 更新日志
 
+### v1.2.0 (2026-04-08)
+- 🔍 Citation 溯源：RAG 答案自动附带文档来源
+- 🧭 Adaptive RAG：LLM 路由分流（RETRIEVE / TOOL / DIRECT）
+- 📊 可观测性：本地 JSON trace + LangSmith 可选集成
+- 📝 README 更新安全模块和新功能文档
+
+### v1.1.0 (2026-04-07)
+- 📐 评测框架：6 维能力分析 + 多模型横向对比
+- 🧪 CapabilityAnalyzer + ModelComparator
+- 📊 评测报告自动生成
+
 ### v1.0.0 (2025-06-15)
 - ✨ 基础AI Agent框架
-- 🔍 RAG知识检索系统
+- 🔍 RAG知识检索系统（混合检索 + CrossEncoder 重排序）
+- 🔒 安全模块（PII 脱敏 / 加密 / 审计 / 沙箱）
 - 💾 长期记忆功能
 - 🛠️ 工具调用支持
 - 🌐 多种搜索服务集成
